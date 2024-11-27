@@ -1,24 +1,24 @@
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8" /> 
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- <link rel="stylesheet" href="{% static 'bosq/css/style.css'}%"> -->
-    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">  -->
-   <title>{% block title %}{% endblock %} - Toko Indoapril</title>
+    <title>{% block title %}{% endblock %} - Indoapril</title>
     {% load django_bootstrap5 %} {% bootstrap_css %}
     {% load static %}
-    <!-- <link rel="stylesheet" href="{% static 'css/style.css' %}"> -->
+
+    <!-- <link rel="stylesheet" href="{% static 'css/style.css' %}">  -->
+    <!-- <link rel="stylesheet" href="{% static 'css/base.css' %}">  -->
     <style>
         .header {
-            background-color: #333;
+            background: linear-gradient(to bottom, yellow 33.33%, blue 33.33% 66.66%, red 66.66%);
             color: #FFD700;
             padding: 10px;
             text-align: center;
             font-weight: bold;
         }
+
         .footer {
             background-color: #FFD700;
             text-align: center;
@@ -26,47 +26,93 @@
             font-weight: bold;
             color: black;
         }
+
         .title {
             font-size: 24px;
             color: #FFD700;
         }
+
+        /* Wrapper Header */
+        .indomaret-header {
+            width: 100%;
+            height: 100px;
+            /* Sesuaikan tinggi header */
+            position: relative;
+        }
+
+        /* Bagian Merah */
+        .red-section {
+            background-color: red;
+            height: 50%;
+            /* height: 33.33%; */
+            width: 100%;
+        }
+
+        /* Bagian Biru */
+        .blue-section {
+            background-color: blue;
+            height: 50%;
+            /* height: 33.33%; */
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        /* Bagian Kuning */
+        .yellow-section {
+            background-color: yellow;
+            height: 50%;
+            /* height: 33.33%; */
+            width: 100%;
+        }
+
+        /* Teks Logo */
+        .logo-text {
+            width: 200px;
+            /* Adjust to the desired width */
+            height: auto;
+            /* Maintain aspect ratio */
+            font-family: Arial, sans-serif;
+            font-size: 24px;
+            font-weight: bold;
+            color: blue;
+            background: white;
+            border-radius: 50px;
+            text-align: center;
+            border: 2px solid red;
+        }
+
+        .bg-red {
+            background-color: red;
+        }
+
+        .bg-yellow {
+            background-color: yellow;
+        }
     </style>
 </head>
 
-<body> 
-    {# Navbar START #}  
-    <header class="fixed top-4 inset-x-0 flex flex-wrap md:justify-start md:flex-nowrap z-50 w-full text-sm">
-        <div class="header">
-            <h1 class="title">TOKO INDOAPRIL</h1>
-        </div>
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <div class="container">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link" href="{% url 'transaksi' %}">Transaksi</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}">Data Produk</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Keluar</a></li>
-                </ul>
-            </div> 
-        </nav>
-      </header>
-    {# Navbar END #} 
-    
-  <main>
-    {% block content %} {% endblock content %}
+<body>
+    {# Include Navbar #}
+    {% include 'navbar.html' %}
+
+    <main>
+        {% block content %} {% endblock content %}
     </main>
-  
+
     {# Footer START #}
     <footer>
-      
+
     </footer>
     {# Footer END #}
-  
+
     {# Script START #}
-    
+
     {% block script %}{% endblock script %}
     {# Script END #}
     {% bootstrap_javascript %}
-</body> 
+</body>
 
 </html>
-

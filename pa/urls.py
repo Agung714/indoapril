@@ -21,13 +21,3 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('indoapril.urls')),
 ]
-
-# urlpatterns = [
-#     path('admin/', admin.site.urls),
-#     path('gallery', include('gallery.urls')),  # Tambahkan URL untuk galeri
-#     path('about', include('about.urls')),  # URL untuk halaman about
-#     path('blog', include('blog.urls')),  # Tambahkan rute ke halaman Blog
-#     path('contact', include('contact.urls')),  # URL untuk contact
-#     path('services/', include('services.urls')),
-
-# ]

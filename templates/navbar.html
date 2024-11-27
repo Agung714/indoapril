@@ -1,0 +1,38 @@
+{% load static %}
+
+{% load custom_tags %}
+{# Navbar START #}
+<header class="fixed top-4 inset-x-0 flex flex-wrap md:justify-start md:flex-nowrap z-50 w-full text-sm">
+    <!-- <div class="header">
+    </div> -->
+    <div class="indomaret-header">
+        <div class="red-section"></div>
+        <div class="blue-section">
+            <!-- <img src="{% static 'image/indoapril.png' %}" alt="Logo" class="logo-text" style="width: 100px;"> -->
+            <h1 class="logo-text">INDOAPRIL</h1>
+            <!-- <h1 class="title">INDOAPRIL</h1> -->
+        </div>
+    </div>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-yellow">
+        <div class="container">
+            <ul class="navbar-nav me-auto">
+                {% if request.path|in_list:"/dashboard/,/create/,/edit/" %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'dashboard' %}">Data Produk</a>
+                </li>
+                {% endif %}
+                {% if request.path|in_list:"/transaksi/" %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'transaksi' %}">Transaksi</a>
+                </li>
+                {% endif %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}">Keluar</a>
+                </li>
+            </ul>
+
+        </div>
+    </nav>
+</header>
+{# Navbar END #}

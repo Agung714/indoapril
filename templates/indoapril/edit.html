@@ -2,14 +2,14 @@
 
 {% load static %}
 
-{% block title %}Tambah Produk{% endblock title %}
+{% block title %}Edit Produk{% endblock title %}
 
 {% block content %}
 <div class="container-fluid my-3">
     <div class="row">
         <div class="col-md-12">
             <div class="card mb-3">
-                <div class="card-header">Tambah Produk</div>
+                <div class="card-header">Edit Produk</div>
                 <div class="card-body">
                     <form method="post" action="{% url 'create' %}">
                         <!-- {% csrf_token %} -->
@@ -24,11 +24,19 @@
                             </div>
                             <div class="col-md-4">
                                 <label for="stock" class="form-label">Stock</label>
-                                <input type="number" id="stock" name="stock" class="form-control" placeholder="Jumlah Stock" required>
+                                <input type="number" id="stock" name="stock" class="form-control" placeholder="Jumlah Stock" readonly>
                             </div>
                             <div class="col-md-4">
                                 <label for="harga_jual" class="form-label">Harga</label>
                                 <input type="number" id="harga_jual" name="harga_jual" class="form-control" placeholder="Harga Jual" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="restock" class="form-label">Re-Stock</label>
+                                <input type="number" id="restock" name="restock" class="form-control" placeholder="Re Stock" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="note" class="form-label">Note</label>
+                                <input type="text" id="note" name="note" class="form-control" placeholder="Catatan">
                             </div>
                             <div class="col-md-12 text-end">
                                 <button type="button" class="btn btn-danger" onclick="window.history.back();">Kembali</button>
