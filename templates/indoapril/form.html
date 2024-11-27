@@ -11,8 +11,8 @@
             <div class="card mb-3">
                 <div class="card-header">Tambah Produk</div>
                 <div class="card-body">
-                    <form method="post" action="{% url 'create' %}">
-                        <!-- {% csrf_token %} -->
+                    <form method="post" action="{% url 'dashboard_create' %}">
+                        {% csrf_token %}
                         <div class="row g-3">
                             <div class="col-md-4">
                                 <label for="kode_produk" class="form-label">Kode Produk</label>
@@ -32,8 +32,6 @@
                             </div>
                             <div class="col-md-12 text-end">
                                 <button type="button" class="btn btn-danger" onclick="window.history.back();">Kembali</button>
-                                
-                                <!-- <button type="reset" class="btn btn-danger">Kembali</button> -->
                                 <button type="submit" class="btn btn-primary">Simpan</button>
                             </div>
                         </div>
@@ -43,5 +41,4 @@
         </div>
     </div>
 </div>
-
 {% endblock content %}

@@ -46,31 +46,33 @@
         <div class="header"><span style="color: #007bff;font-family: Arial, sans-serif;">INDOAPRIL</span></div>
         <div class="text-center mb-3">
             <img src="{% static 'image/indoapril.png' %}" alt="Logo" style="width: 100px;">
-
         </div>
 
         <div class="login-card">
-                <form method="get" action="/dashboard">
+            <form method="post" action="{% url 'login' %}">
+                {% csrf_token %}
                 <div class="mb-3">
                     <label for="username" class="form-label">Username</label>
-                    <input type="text" class="form-control" id="username" placeholder="Username">
+                    <input type="text" class="form-control" name="username" id="username" placeholder="Username" required>
                 </div>
                 <div class="mb-3">
                     <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="password" placeholder="Password">
+                    <input type="password" class="form-control" name="password" id="password" placeholder="Password" required>
                 </div>
+                {% if error %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+                {% endif %}
                 <div class="d-grid gap-2">
                     <button type="reset" class="btn btn-danger">Reset</button>
-                    <!-- <button type="submit" class="btn btn-primary"><a href="/manajer">Login</a></button> -->
-                    
                     <button type="submit" class="btn btn-primary">Login</button>
-                    <a href="{% url 'transaksi' %}" class="btn btn-primary">Kasir</a>
-    
-                </div> 
+                </div>
             </form>
         </div>
 
         <div class="footer mt-4">
+            <p>&copy; 2024 Indoapril. All Rights Reserved.</p>
         </div>
     </div>
 
