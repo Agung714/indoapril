@@ -28,6 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 AUTH_USER_MODEL = 'indoapril.CustomUser'
+API_BASE_URL = 'http://localhost:8000/api'
 
 # Application definition
 

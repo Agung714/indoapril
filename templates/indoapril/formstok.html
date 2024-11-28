@@ -1,49 +1,94 @@
 {% extends 'base.html' %}
 
-{% load static %}
-
-{% block title %}Tambah Produk{% endblock title %}
+{% block title %}Re-Stok Produk{% endblock title %}
 
 {% block content %}
 <div class="container-fluid my-3">
-    <div class="row"> 
+    <div class="row">
         <div class="col-md-12">
             <div class="card mb-3">
-                <div class="card-header">Re-Stok</div>
+                <div class="card-header">Re-Stok Produk</div>
                 <div class="card-body">
                     <form method="post" action="{% url 'restok_create' %}">
                         {% csrf_token %}
                         <div class="row g-3">
+                            <!-- Kode Produk -->
                             <div class="col-md-4">
                                 <label for="kode_produk" class="form-label">Kode Produk</label>
-                                <input type="text" id="kode_produk" name="kode_produk" class="form-control" placeholder="Kode Produk" required>
+                                <input type="text" id="kode_produk" name="kode_produk" 
+                                    class="form-control" 
+                                    placeholder="Masukkan Kode Produk" 
+                                    required>
                             </div>
+
+                            <!-- Nama Produk -->
                             <div class="col-md-4">
                                 <label for="nama_produk" class="form-label">Nama Produk</label>
-                                <input type="text" id="nama_produk" name="nama_produk" class="form-control" placeholder="Nama Produk" readonly>
+                                <input type="text" id="nama_produk" name="nama_produk" 
+                                    class="form-control" 
+                                    placeholder="Nama Produk" 
+                                    readonly>
                             </div>
+
+                            <!-- Jumlah Re-Stok -->
                             <div class="col-md-4">
-                                <label for="restock" class="form-label">Re-Stock</label>
-                                <input type="number" id="restock" name="restock" class="form-control" placeholder="Re Stock" required>
+                                <label for="restock" class="form-label">Jumlah Re-Stok</label>
+                                <input type="number" id="restock" name="restock" 
+                                    class="form-control" 
+                                    placeholder="Jumlah Re-Stok" 
+                                    required>
                             </div>
-                            <div class="col-md-4">
-                                <label for="note" class="form-label">Note</label>
-                                <input type="text" id="note" name="note" class="form-control" placeholder="Catatan">
+
+                            <!-- Note -->
+                            <div class="col-md-12">
+                                <label for="note" class="form-label">Catatan</label>
+                                <textarea id="note" name="note" 
+                                    class="form-control" 
+                                    rows="3" 
+                                    placeholder="Tambahkan catatan (opsional)"></textarea>
                             </div>
+
+                            <!-- Tombol Aksi -->
                             <div class="col-md-12 text-end">
                                 <button type="button" class="btn btn-danger" onclick="window.history.back();">Kembali</button>
                                 <button type="submit" class="btn btn-primary">Simpan</button>
                             </div>
                         </div>
                     </form>
-                    <!-- <form method="post">
-                        {% csrf_token %}
-                        {{ form.as_p }}
-                        <button type="submit" class="btn btn-primary">Simpan</button>
-                    </form> -->
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    document.getElementById('kode_produk').addEventListener('change', function () {
+        const kodeProduk = this.value.trim();
+
+        // Hanya lakukan permintaan jika kode produk tidak kosong
+        if (kodeProduk !== '') {
+            fetch(`/produk-detail/?kode_produk=${kodeProduk}`, {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const namaProdukField = document.getElementById('nama_produk');
+                
+                if (data.success) {
+                    namaProdukField.value = data.nama_produk;
+                } else {
+                    namaProdukField.value = '';
+                    alert(data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan saat mengambil data produk.');
+            });
+        }
+    });
+</script>
 {% endblock content %}

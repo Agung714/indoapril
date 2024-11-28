@@ -63,3 +63,13 @@ class ItemTransaksi(models.Model):
 
     def __str__(self):
         return f"{self.produk.nama_produk} x {self.jumlah}"
+    
+class Restok(models.Model):
+    produk = models.ForeignKey(Produk, on_delete=models.CASCADE)
+    tanggal = models.DateTimeField(auto_now_add=True)
+    stock_lama = models.PositiveIntegerField()
+    stock_tambah = models.PositiveIntegerField()
+    note = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return f"Restok {self.produk.nama_produk} - {self.tanggal.strftime('%d-%m-%Y %H:%M:%S')}"
