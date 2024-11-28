@@ -2,15 +2,25 @@
 <html lang="en">
 
 <head>
+    <!-- Metadata dasar -->
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Judul halaman -->
     <title>{% block title %}{% endblock %} - Indoapril</title>
-    {% load django_bootstrap5 %} {% bootstrap_css %}
+
+    <!-- Memuat pustaka Bootstrap 5 -->
+    {% load django_bootstrap5 %} 
+    {% bootstrap_css %}
+
+    <!-- Memuat pustaka static Django -->
     {% load static %}
 
+    <!-- Menyisipkan file CSS eksternal -->
     <!-- <link rel="stylesheet" href="{% static 'css/style.css' %}">  -->
     <!-- <link rel="stylesheet" href="{% static 'css/base.css' %}">  -->
+
     <style>
+        /* Gaya untuk header */
         .header {
             background: linear-gradient(to bottom, yellow 33.33%, blue 33.33% 66.66%, red 66.66%);
             color: #FFD700;
@@ -19,6 +29,7 @@
             font-weight: bold;
         }
 
+        /* Gaya untuk footer */
         .footer {
             background-color: #FFD700;
             text-align: center;
@@ -27,67 +38,64 @@
             color: black;
         }
 
+        /* Gaya teks untuk judul */
         .title {
             font-size: 24px;
             color: #FFD700;
         }
 
-        /* Wrapper Header */
+        /* Wrapper untuk header Indomaret */
         .indomaret-header {
             width: 100%;
-            height: 100px;
-            /* Sesuaikan tinggi header */
+            height: 100px; /* Tinggi header */
             position: relative;
         }
 
-        /* Bagian Merah */
+        /* Bagian merah header */
         .red-section {
             background-color: red;
-            height: 50%;
-            /* height: 33.33%; */
+            height: 50%; /* Mengisi 50% tinggi header */
             width: 100%;
         }
 
-        /* Bagian Biru */
+        /* Bagian biru header */
         .blue-section {
             background-color: blue;
-            height: 50%;
-            /* height: 33.33%; */
+            height: 50%; /* Mengisi 50% tinggi header */
             width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            display: flex; /* Menggunakan Flexbox */
+            justify-content: center; /* Teks rata tengah horizontal */
+            align-items: center; /* Teks rata tengah vertikal */
             position: relative;
         }
 
-        /* Bagian Kuning */
+        /* Bagian kuning header */
         .yellow-section {
             background-color: yellow;
-            height: 50%;
-            /* height: 33.33%; */
+            height: 50%; /* Mengisi 50% tinggi header */
             width: 100%;
         }
 
-        /* Teks Logo */
+        /* Gaya untuk teks logo */
         .logo-text {
-            width: 200px;
-            /* Adjust to the desired width */
-            height: auto;
-            /* Maintain aspect ratio */
-            font-family: Arial, sans-serif;
-            font-size: 24px;
-            font-weight: bold;
-            color: blue;
-            background: white;
-            border-radius: 50px;
-            text-align: center;
-            border: 2px solid red;
+            width: 200px; /* Lebar teks logo */
+            height: auto; /* Tinggi otomatis agar proporsional */
+            font-family: Arial, sans-serif; /* Font logo */
+            font-size: 24px; /* Ukuran font */
+            font-weight: bold; /* Teks tebal */
+            color: blue; /* Warna teks biru */
+            background: white; /* Background putih */
+            border-radius: 50px; /* Membuat elemen berbentuk oval */
+            text-align: center; /* Teks rata tengah */
+            border: 2px solid red; /* Garis pinggir merah */
         }
 
+        /* Warna latar merah */
         .bg-red {
             background-color: red;
         }
 
+        /* Warna latar kuning */
         .bg-yellow {
             background-color: yellow;
         }
@@ -95,23 +103,23 @@
 </head>
 
 <body>
-    {# Include Navbar #}
+    <!-- Menyisipkan Navbar dari file eksternal -->
     {% include 'navbar.html' %}
 
     <main>
+        <!-- Blok konten utama yang dapat diubah -->
         {% block content %} {% endblock content %}
     </main>
 
-    {# Footer START #}
+    <!-- Footer -->
     <footer>
-
+        <!-- Konten footer dapat ditambahkan di sini -->
     </footer>
-    {# Footer END #}
 
-    {# Script START #}
-
+    <!-- Area untuk script tambahan -->
     {% block script %}{% endblock script %}
-    {# Script END #}
+
+    <!-- Memuat Bootstrap JavaScript -->
     {% bootstrap_javascript %}
 </body>
 

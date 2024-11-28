@@ -13,6 +13,7 @@ class CustomUserAdmin(UserAdmin):
     inlines = (UserRoleInline,)
     list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'get_role')
 
+    # Explicitly define fieldsets to avoid unknown field errors
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
         ('Personal info', {'fields': ('first_name', 'last_name', 'email')}),

@@ -2,7 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from .models import UserRole, Produk
-from .forms import ProdukForm
+from django.contrib import messages
+from .forms import ProdukForm  
 
 def login_view(request):
     error = None
@@ -48,22 +49,45 @@ def dashboard_create(request):
     if request.method == 'POST':
         form = ProdukForm(request.POST)
         if form.is_valid():
+            print("Form is valid. Saving data...")
             form.save()
             return redirect('dashboard')
+        else:
+            print("Form is not valid:", form.errors)
     else:
         form = ProdukForm()
 
     return render(request, 'indoapril/form.html', {'form': form})
 
 @login_required
-def dashboard_edit(request, id):
-    produk = get_object_or_404(Produk, id=id)
-    if request.method == 'POST':
-        form = ProdukForm(request.POST, instance=produk)
-        if form.is_valid():
-            form.save() 
-            return redirect('dashboard')
-    else:
-        form = ProdukForm(instance=produk)
+def restok_view(request):
+    return render(request, 'indoapril/restok.html')
 
-    return render(request, 'indoapril/form.html', {'form': form})
+@login_required
+def restok_create(request):
+    return render(request, 'indoapril/formstok.html')
+
+# def dashboard_create(request):
+#     if request.method == 'POST':
+#         form = ProdukForm(request.POST)
+#         if form.is_valid():
+#             form.save()
+#             return redirect('dashboard')
+#     else:
+#         form = ProdukForm()
+
+#     return render(request, 'indoapril/form.html', {'form': form})
+
+
+# @login_required
+# def dashboard_edit(request, id):
+#     produk = get_object_or_404(Produk, id=id)
+#     if request.method == 'POST':
+#         form = ProdukForm(request.POST, instance=produk)
+#         if form.is_valid():
+#             form.save() 
+#             return redirect('dashboard')
+#     else:
+#         form = ProdukForm(instance=produk)
+
+#     return render(request, 'indoapril/form.html', {'form': form})

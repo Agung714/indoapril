@@ -1,0 +1,95 @@
+
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Beranda{% endblock title %}
+ 
+{% block content %} 
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Riwayat Re-Stock</h2>
+
+    <!-- Tombol Tambah Produk -->
+    <div class="d-flex justify-content-end mb-3">
+       <a href="{% url 'restok_create' %}" class="btn btn-primary">+ Tambah Stock</a>
+        </div>
+
+    <!-- Tabel Restok -->
+     <!-- LEBIH BAIK NAMPILIN DARI YANG TERBARU -->
+    <table class="table table-bordered table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>No.</th>
+                <th>Kode</th>
+                <th>Tanggal</th>
+                <th>Stock Baru</th>
+                <th>Kode Produk</th>
+                <th>Note</th>
+                <!-- <th>Opsi</th> -->
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>0001</td>
+                <td>30/01/2004</td>
+                <td>300</td>
+                <td>001</td>
+                <td>opsional</td>
+                <!-- <td> 
+                    <a href="{% url 'dashboard_edit' %}" class="btn btn-sm btn-warning">Edit</a>
+                </td> -->
+            </tr>
+            
+        </tbody>
+    </table>
+    
+    <!-- Pagination -->
+    <div class="d-flex justify-content-between align-items-center">
+        <p>Showing 1 to {{ stok_list|length }} of {{ stok_list|length }} entries</p>
+        <!-- Pagination controls can be added here -->
+    </div>
+
+    <!-- Pagination Controls NANTI -->
+    <!-- <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1" aria-label="First">
+                        <span aria-hidden="true">&laquo;&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+
+            <li class="page-item disabled">
+                <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            </li>
+
+            {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+                        <span aria-hidden="true">&raquo;&raquo;</span>
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav> -->
+
+</div>
+
+<!-- </body>
+</html> -->
+
+
+{% endblock content %}

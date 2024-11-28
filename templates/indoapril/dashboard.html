@@ -10,12 +10,24 @@
     <div class="container mt-5">
         <h2 class="text-center mb-4">Data Produk</h2>
 
-        <!-- Tombol Tambah Produk -->
-        <div class="d-flex justify-content-end mb-3">
-            <!-- <button class="btn btn-primary">+ Tambah Produk</button> -->
-            <a href="{% url 'dashboard_create' %}" class="btn btn-primary">+ Tambah Produk</a>
-            <!-- <button class="btn btn-tambah-produk">+ Tambah Produk</button> -->
-        </div>
+       <!-- Search Bar dan Tombol Tambah Produk -->
+<div class="d-flex justify-content-between mb-3">
+    <!-- Search Bar -->
+    <form class="form-inline d-flex justify-content-start" method="GET" action="{% url 'dashboard' %}">
+        <input 
+            type="text" 
+            name="search" 
+            class="form-control" 
+            placeholder="Kode Produk" 
+            value="{{ request.GET.search|default:'' }}"
+        >
+        <button type="submit" class="btn btn-outline-secondary ml-2">Cari</button>
+    </form>
+
+    <!-- Tombol Tambah Produk -->
+    <a href="{% url 'dashboard_create' %}" class="btn btn-primary">+ Tambah Produk</a>
+</div>
+
 
         <!-- Tabel Produk -->
         <table class="table table-bordered table-striped">
