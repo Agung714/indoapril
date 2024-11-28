@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from .models import UserRole, Produk, Transaksi, ItemTransaksi
 from django.contrib import messages
-from .forms import ProdukForm  
+from .forms import ProdukForm
 
 def login_view(request):
     error = None
@@ -31,30 +31,53 @@ def login_view(request):
 
 @login_required
 def dashboard_view(request):
-    return render(request, 'indoapril/dashboard.html')
+    search_query = request.GET.get('search', '')
+    if search_query:
+        produk_list = Produk.objects.filter(kode_produk__icontains=search_query)
+    else:
+        produk_list = Produk.objects.all()
 
-@login_required
-def dashboard_create(request):
-    return render(request, 'indoapril/form.html')
+    return render(request, 'indoapril/dashboard.html', {'produk_list': produk_list})
 
-@login_required
-def dashboard_edit(request):
-    return render(request, 'indoapril/edit.html')
 
 @login_required
 def dashboard_create(request):
     if request.method == 'POST':
         form = ProdukForm(request.POST)
         if form.is_valid():
-            print("Form is valid. Saving data...")
             form.save()
+            messages.success(request, "Produk berhasil ditambahkan!")
             return redirect('dashboard')
         else:
-            print("Form is not valid:", form.errors)
+            messages.error(request, "Terjadi kesalahan. Periksa data yang Anda masukkan.")
     else:
         form = ProdukForm()
 
     return render(request, 'indoapril/form.html', {'form': form})
+
+@login_required
+def dashboard_edit(request, kode_produk):
+    produk = get_object_or_404(Produk, kode_produk=kode_produk)
+
+    if request.method == 'POST':
+        form = ProdukForm(request.POST, instance=produk)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f"Produk {produk.nama_produk} berhasil diperbarui!")
+            return redirect('dashboard')
+        else:
+            messages.error(request, "Terjadi kesalahan. Periksa data yang Anda masukkan.")
+    else:
+        form = ProdukForm(instance=produk)
+
+    return render(request, 'indoapril/edit.html', {'form': form, 'produk': produk})
+
+def dashboard_delete(request, kode_produk):
+    produk = get_object_or_404(Produk, kode_produk=kode_produk)
+
+    produk.delete()
+    messages.success(request, f"Produk {produk.nama_produk} berhasil dihapus!")
+    return redirect('dashboard')
 
 @login_required
 def restok_view(request):
@@ -67,10 +90,9 @@ def restok_create(request):
 @login_required
 def transaksi_view(request):
     if request.method == "POST":
-        from json import loads  # Import untuk parsing JSON
+        from json import loads
 
         try:
-            # Parsing dan validasi data POST
             data = loads(request.body)
             items = data.get("items", [])
             pembayaran = data.get("pembayaran", 0)
@@ -81,7 +103,6 @@ def transaksi_view(request):
             if pembayaran <= 0:
                 return JsonResponse({'error': 'Pembayaran harus lebih besar dari 0.'}, status=400)
 
-            # Membuat transaksi baru
             transaksi = Transaksi.objects.create(total_harga=0, pembayaran=pembayaran, kembalian=0)
             total = 0
 

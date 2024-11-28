@@ -18,6 +18,10 @@ class ProdukForm(forms.ModelForm):
     class Meta:
         model = Produk
         fields = ['kode_produk', 'nama_produk', 'stock', 'harga_jual']
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['kode_produk'].widget.attrs['readonly'] = True
         
 class TransaksiForm(forms.ModelForm):
     class Meta:
