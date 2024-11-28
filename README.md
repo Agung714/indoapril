@@ -28,12 +28,12 @@ Ikuti langkah-langkah berikut untuk menjalankan proyek ini di mesin lokal Anda:
 
 1. **Clone repositori**
    ```bash
-   git clone https://github.com/username/nama-proyek.git
+   git clone https://github.com/Agung714/indoapril.git
    ```
 
 2. **Masuk ke direktori proyek**
    ```bash
-   cd nama-proyek
+   cd indoapril
    ```
 
 3. **Jalankan server**
