@@ -18,7 +18,7 @@ Berikut adalah fitur-fitur utama yang disediakan oleh aplikasi ini:
 - **Pencarian:** Temukan data produk dengan cepat melalui fitur pencarian yang responsif.
 - **Pagination:** Navigasi data dengan lebih rapi menggunakan fitur pagination.
 - **Restok:** Menambahkan stok produk.
--**Transaksi:** Mengelola transaksi.
+- **Transaksi:** Mengelola transaksi.
 ---
 
 ## 📋 Dokumentasi
