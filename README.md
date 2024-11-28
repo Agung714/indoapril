@@ -77,6 +77,8 @@ Proyek ini dikembangkan oleh:
 
 ![Login](screenshot/Login.png)
 ![Dashboard](screenshot/Dashboard.png)
+
+![Search](screenshot/Search.png)
 ![Form](screenshot/Form.png)
 ![Edit](screenshot/Edit.png)
 ![Restok](screenshot/Restok.png)
