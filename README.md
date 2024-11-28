@@ -75,16 +75,25 @@ Proyek ini dikembangkan oleh:
 —
 
 
+# Login
 ![Login](screenshot/Login.png)
+# Dashboard
 ![Dashboard](screenshot/Dashboard.png)
-
+# Search
 ![Search](screenshot/Search.png)
+# Form Create
 ![Form](screenshot/Form.png)
+# Form Edit
 ![Edit](screenshot/Edit.png)
+# Restok
 ![Restok](screenshot/Restok.png)
+# Form Restok
 ![FormRestok](screenshot/FormRestok.png)
+# Riwayat
 ![Riwayat](screenshot/Riwayat.png)
+# Detail
 ![Detail](screenshot/Detail.png)
+# Transaksi
 ![Transaksi](screenshot/Transaksi.png)
 
 
