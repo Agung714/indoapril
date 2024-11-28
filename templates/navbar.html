@@ -9,7 +9,7 @@
         <div class="blue-section">
             <!-- <img src="{% static 'image/indoapril.png' %}" alt="Logo" class="logo-text" style="width: 100px;"> -->
             <h1 class="logo-text">INDOAPRIL</h1>
-            <!-- <h1 class="title">INDOAPRIL</h1> --> 
+            <!-- <h1 class="title">INDOAPRIL</h1> -->
         </div>
     </div>
 
@@ -17,11 +17,14 @@
         <div class="container">
             <ul class="navbar-nav me-auto">
                 <!-- bisa juga not in transaksi , nnti tes -->
-                {% if request.path == "/transaksi/" %}
+                {% if request.user.user_role.role == "kasir" %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'transaksi' %}">Transaksi</a>
                 </li>
-                {% else %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'riwayat' %}">Riwayat</a>
+                </li>
+                {% elif request.user.user_role.role == "manajer" %}
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'dashboard' %}">Data Produk</a>
                 </li>
@@ -33,7 +36,7 @@
                 </li>
                 {% endif %}
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'login' %}">Keluar</a>
+                    <a class="nav-link" href="{% url 'logout' %}">Keluar</a>
                 </li>
             </ul>
 

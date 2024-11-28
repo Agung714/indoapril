@@ -3,6 +3,9 @@
 
 {% block title %}Transaksi{% endblock title %}
 
+{% load custom_filters %}
+<!-- <td>Rp. {{ produk.harga_jual|dot_separator }}</td> -->
+
 {% block content %}
 <div class="container-fluid my-3">
     <div class="row">
@@ -13,29 +16,35 @@
                 <div class="card-body">
                     <form id="form-transaksi" class="row g-3">
                         <div class="col-md-2">
+                            <label for="kode-produk" class="form-label">Kode Produk</label>
                             <input type="text" id="kode-produk" class="form-control" placeholder="Kode Produk">
                         </div>
                         <div class="col-md-2">
-                            <input type="text" id="nama-produk" class="form-control" placeholder="Nama Produk" readonly>
+                            <label for="nama-produk" class="form-label">Nama Produk</label>
+                            <input type="text" id="nama-produk" class="form-control" placeholder="Nama Produk" disabled>
                         </div>
                         <div class="col-md-2">
-                            <input type="text" id="harga" class="form-control" placeholder="Harga" readonly>
+                            <label for="harga" class="form-label">Harga</label>
+                            <input type="text" id="harga" class="form-control" placeholder="Harga" disabled>
                         </div>
                         <div class="col-md-2">
-                            <input type="text" id="stock" class="form-control" placeholder="Stock" readonly>
+                            <label for="stock" class="form-label">Stock</label>
+                            <input type="text" id="stock" class="form-control" placeholder="Stock" disabled>
                         </div>
                         <div class="col-md-2">
+                            <label for="jumlah" class="form-label">Jumlah</label>
                             <input type="number" id="jumlah" class="form-control" placeholder="Jumlah">
                         </div>
                         <div class="col-md-2">
-                            <input type="text" id="subtotal" class="form-control" placeholder="Subtotal" readonly>
+                            <label for="subtotal" class="form-label">Subtotal</label>
+                            <input type="text" id="subtotal" class="form-control" placeholder="Subtotal" disabled>
                         </div>
                         <div class="col-md-12 text-end">
                             <button type="button" class="btn btn-primary" id="btn-add">Tambah</button>
                             <button type="reset" class="btn btn-danger">Reset</button>
                         </div>
                     </form>
-
+                
                     <!-- Table Transaksi -->
                     <table class="table table-bordered mt-3" id="table-transaksi">
                         <thead>
@@ -49,36 +58,40 @@
                                 <th>Opsi</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td colspan="7" class="text-center">No data available in table</td>
-                            </tr>
+                        <tbody id="table-body">
+                            <!-- <tr>
+                            </tr> -->
                         </tbody>
                     </table>
-
+                
                     <h4 class="text-end" id="total-harga">Rp. 0</h4>
                 </div>
+                
             </div>
 
             <!-- Form Pembayaran -->
             <div class="card">
                 <div class="card-body">
-                    <form id="form-pembayaran" class="row g-3">
-                        <div class="col-md-4">
-                            <label>Pembayaran:</label>
-                            <input type="number" id="pembayaran" class="form-control">
+                    <form id="form-pembayaran" class="row g-3 align-items-start">
+                        <div class="col-md-6">
+                            <label for="pembayaran" class="form-label">Pembayaran:</label>
+                            <div class="input-group">
+                                <span class="input-group-text">Rp.</span>
+                                <input type="text" id="pembayaran" class="form-control" placeholder="" min="0">
+                            </div>
                         </div>
-                        <div class="col-md-4">
-                            <label>Kembalian:</label>
-                            <input type="text" id="kembalian" class="form-control" readonly>
+                        <div class="col-md-6">
+                            <label for="kembalian" class="form-label">Kembalian:</label>
+                            <input type="text" id="kembalian" class="form-control" disabled>
                         </div>
-                        <div class="col-md-4 text-end">
+                        <div class="col-md-12 text-end">
                             <button type="reset" class="btn btn-danger">Reset</button>
                             <button type="submit" class="btn btn-primary">Simpan</button>
                         </div>
                     </form>
                 </div>
             </div>
+            
         </div>
     </div>
 </div>
@@ -88,6 +101,19 @@
 
     const tableBody = document.querySelector("#table-transaksi tbody");
     const totalHargaEl = document.querySelector("#total-harga");
+
+    function formatRupiah(angka) {
+    return "Rp. " + angka.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+// function formatNumberWithDots($number) {
+//     return number_format($number, 0, ',', '.');
+// }
+function formatNumberWithDots(angka) {
+        return angka.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+
 
     // Fungsi untuk mendapatkan nilai dari cookie
     function getCookie(name) {
@@ -118,9 +144,16 @@
                     document.querySelector("#stock").value = data.stock;
                 } else {
                     alert(data.error);
+                    resetInputs(); // Reset form jika produk tidak ditemukan
+
                 }
             })
-            .catch(error => console.error("Error:", error));
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Terjadi kesalahan saat mengambil data produk.");
+                resetInputs(); // Reset form jika terjadi error
+            });
+
     });
 
     // Menghitung subtotal ketika jumlah diubah
@@ -131,6 +164,7 @@
         document.querySelector("#subtotal").value = subtotal ? subtotal.toFixed(2) : '';
     });
 
+
     // Menambahkan item ke tabel transaksi
     document.querySelector("#btn-add").addEventListener("click", function () {
         const kodeProduk = document.querySelector("#kode-produk").value;
@@ -138,6 +172,10 @@
         const harga = parseFloat(document.querySelector("#harga").value);
         const jumlah = parseInt(document.querySelector("#jumlah").value);
         const stock = parseInt(document.querySelector("#stock").value);
+
+        console.log({ kodeProduk, namaProduk, harga, jumlah, stock }); // Debug: Cek input
+
+
 
         if (!kodeProduk || !namaProduk || isNaN(harga) || isNaN(jumlah) || jumlah <= 0) {
             alert("Lengkapi semua data sebelum menambahkan.");
@@ -151,14 +189,17 @@
 
         const subtotal = harga * jumlah;
         totalHarga += subtotal;
-        totalHargaEl.textContent = `Rp. ${totalHarga.toFixed(2)}`;
+        // totalHargaEl.textContent = `Rp. ${totalHarga.toFixed(2)}`;
+        totalHargaEl.textContent = formatRupiah(totalHarga); // Gunakan filter Rupiah
+
+
 
         const row = document.createElement("tr");
         row.innerHTML = `
             <td></td>
             <td>${kodeProduk}</td>
             <td>${namaProduk}</td>
-            <td>${harga.toFixed(2)}</td>
+            <td>${formatNumberWithDots(harga.toFixed(2))}</td> <!-- Format harga untuk tampilan -->
             <td class="jumlah">${jumlah}</td>
             <td class="subtotal">${subtotal.toFixed(2)}</td>
             <td>
@@ -168,14 +209,21 @@
         tableBody.appendChild(row);
 
         updateRowNumbers();
+        // Debug: Pastikan row berhasil ditambahkan
+        console.log("Row added:", row);
 
         // Tambahkan event listener untuk tombol hapus
         row.querySelector(".btn-delete").addEventListener("click", function () {
             const subtotal = parseFloat(row.querySelector(".subtotal").textContent);
             totalHarga -= subtotal;
-            totalHargaEl.textContent = `Rp. ${totalHarga.toFixed(2)}`;
+            // totalHargaEl.textContent = `Rp. ${totalHarga.toFixed(2)}`;
+            totalHargaEl.textContent = formatRupiah(totalHarga); // Gunakan filter Rupiah
+
+
             row.remove();
             updateRowNumbers();
+            console.log("Row deleted. Updated total:", totalHarga);
+
         });
 
         // Reset input setelah menambahkan item
@@ -199,63 +247,111 @@
         document.querySelector("#jumlah").value = '';
         document.querySelector("#subtotal").value = '';
     }
+    document.querySelector("#pembayaran").addEventListener("input", function () {
+    let rawValue = this.value.replace(/\./g, ''); // Hapus titik untuk memproses angka sebenarnya
+
+    // Validasi: Hanya angka dan kosongkan jika input tidak valid
+    if (!/^\d*$/.test(rawValue)) {
+        rawValue = rawValue.replace(/\D/g, ''); // Hapus karakter non-angka
+    }
+
+    // Jika input valid, format ulang dengan titik
+    if (rawValue) {
+        this.value = parseInt(rawValue, 10).toLocaleString('id-ID'); // Tambahkan titik untuk format ribuan
+    } else {
+        this.value = ''; // Kosongkan input jika tidak valid
+    }
+
+    // Perhitungan nilai kembalian
+    const pembayaran = parseInt(rawValue, 10) || 0; // Konversi ke angka (atau 0 jika kosong)
+    const kembalianEl = document.querySelector("#kembalian");
+
+    if (pembayaran >= totalHarga) {
+        const kembalian = pembayaran - totalHarga;
+        kembalianEl.value = kembalian.toLocaleString('id-ID', { minimumFractionDigits: 2 });
+    } else {
+        kembalianEl.value = "0";
+    }
+});
+
+
+
+
+
+    
 
     // Menangani submit form pembayaran dan menghitung kembalian
     document.querySelector("#form-pembayaran").addEventListener("submit", function (e) {
-        e.preventDefault();
+    e.preventDefault();
 
-        const rows = tableBody.querySelectorAll("tr");
-        if (rows.length === 0) {
-            alert("Tidak ada item dalam transaksi.");
-            return;
+    const rows = tableBody.querySelectorAll("tr");
+    if (rows.length === 0) {
+        alert("Tidak ada item dalam transaksi.");
+        return;
+    }
+
+    const items = [];
+    rows.forEach(row => {
+        const kodeProdukEl = row.querySelector("td:nth-child(2)");
+        const jumlahEl = row.querySelector(".jumlah");
+
+        if (kodeProdukEl && jumlahEl) {
+            const kodeProduk = kodeProdukEl.textContent;
+            const jumlah = parseInt(jumlahEl.textContent);
+            items.push({ produk_id: kodeProduk, jumlah });
         }
-
-        const items = [];
-        rows.forEach(row => {
-            const kodeProdukEl = row.querySelector("td:nth-child(2)");
-            const jumlahEl = row.querySelector(".jumlah");
-
-            if (kodeProdukEl && jumlahEl) {
-                const kodeProduk = kodeProdukEl.textContent;
-                const jumlah = parseInt(jumlahEl.textContent);
-                items.push({ produk_id: kodeProduk, jumlah });
-            }
-        });
-
-        const pembayaran = parseFloat(document.querySelector("#pembayaran").value);
-        if (isNaN(pembayaran) || pembayaran <= 0) {
-            alert("Masukkan jumlah pembayaran yang valid.");
-            return;
-        }
-
-        if (pembayaran < totalHarga) {
-            alert("Pembayaran tidak mencukupi.");
-            return;
-        }
-
-        const kembalian = pembayaran - totalHarga;
-
-        fetch("/transaksi/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": getCookie("csrftoken"),
-            },
-            body: JSON.stringify({ items, pembayaran, total_harga: totalHarga, kembalian }),
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert(`Transaksi berhasil disimpan! Kembalian: Rp. ${kembalian.toFixed(2)}`);
-                    window.location.reload();
-                } else {
-                    alert(data.error);
-                }
-            })
-            .catch(error => {
-                console.error("Terjadi kesalahan:", error);
-                alert("Terjadi kesalahan dalam menyimpan transaksi.");
-            });
     });
+
+    const pembayaranInput = document.querySelector("#pembayaran");
+    const pembayaran = parseFloat(pembayaranInput.value.replace(/\./g, '')) || 0; // Nilai asli tanpa titik
+
+    if (isNaN(pembayaran) || pembayaran <= 0) {
+        alert("Masukkan jumlah pembayaran yang valid.");
+        return;
+    }
+
+    if (pembayaran < totalHarga) {
+        alert("Pembayaran tidak mencukupi.");
+        return;
+    }
+
+    const kembalian = pembayaran - totalHarga;
+
+    fetch("/transaksi/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": getCookie("csrftoken"),
+        },
+        body: JSON.stringify({ 
+            items, 
+            pembayaran, 
+            total_harga: totalHarga, 
+            kembalian 
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(`Transaksi berhasil disimpan! Kembalian: ${kembalian.toLocaleString('id-ID', { minimumFractionDigits: 2 })}`);
+            window.location.reload();
+        } else {
+            alert(data.error);
+        }
+    })
+    .catch(error => {
+        console.error("Terjadi kesalahan:", error);
+        alert("Terjadi kesalahan dalam menyimpan transaksi.");
+    });
+});
+
+    // Reset Page
+    // Menangkap tombol reset pertama berdasarkan urutan di DOM
+    document.querySelector(".col-md-4.text-end .btn.btn-danger[type='reset']").addEventListener("click", function (event) {
+        event.preventDefault(); // Mencegah perilaku default tombol reset
+        location.reload(); // Reload halaman
+    });
+
+
 </script>
 {% endblock %}

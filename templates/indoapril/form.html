@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}Tambah Produk{% endblock title %}
-
+  
 {% block content %}
 <div class="container mt-5">
     <div class="card">
@@ -10,25 +10,25 @@
             <form method="post" action="{% url 'dashboard_create' %}">
                 {% csrf_token %}
                 <div class="row">
-                    <div class="col-md-6 mb-3">
+                    <div class="mb-3">
                         <label for="kode_produk" class="form-label">Kode Produk</label>
                         <input type="text" id="kode_produk" name="kode_produk" class="form-control" placeholder="Masukkan Kode Produk" required>
                     </div>
-                    <div class="col-md-6 mb-3">
+                    <div class="mb-3">
                         <label for="nama_produk" class="form-label">Nama Produk</label>
                         <input type="text" id="nama_produk" name="nama_produk" class="form-control" placeholder="Masukkan Nama Produk" required>
                     </div>
-                    <div class="col-md-6 mb-3">
+                    <div class="mb-3">
                         <label for="stock" class="form-label">Stock</label>
                         <input type="number" id="stock" name="stock" class="form-control" placeholder="Masukkan Jumlah Stock" required>
                     </div>
-                    <div class="col-md-6 mb-3">
+                    <div class="mb-3">
                         <label for="harga_jual" class="form-label">Harga</label>
                         <input type="number" id="harga_jual" name="harga_jual" class="form-control" placeholder="Masukkan Harga Produk" required>
                     </div>
                 </div>
                 <div class="text-end">
-                    <button type="button" class="btn btn-secondary" onclick="window.history.back();">Kembali</button>
+                    <button type="button" class="btn btn-danger" onclick="window.history.back();">Kembali</button>
                     <button type="submit" class="btn btn-primary">Simpan</button>
                 </div>
             </form>

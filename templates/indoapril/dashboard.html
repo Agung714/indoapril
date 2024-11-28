@@ -1,10 +1,11 @@
 {% extends 'base.html' %}
 
 {% load static %}
+{% load custom_filters %}
 
-{% block title %}Beranda{% endblock title %}
+{% block title %}Dashboard{% endblock title %}
 
-{% block content %}  
+{% block content %}
 
 <div class="container mt-5">
     <h2 class="text-center mb-4">Data Produk</h2>
@@ -13,16 +14,11 @@
     <div class="d-flex justify-content-between mb-3">
         <!-- Search Bar -->
         <form class="form-inline d-flex justify-content-start" method="GET" action="{% url 'dashboard' %}">
-            <input 
-                type="text" 
-                name="search" 
-                class="form-control" 
-                placeholder="Kode Produk" 
-                value="{{ request.GET.search|default:'' }}"
-            >
-            <button type="submit" class="btn btn-outline-secondary ml-2">Cari</button>
+            <input type="text" name="search" class="form-control me-2" placeholder="Kode Produk"
+                value="{{ request.GET.search|default:'' }}">
+            <button type="submit" class="btn btn-outline-secondary">Cari</button>
         </form>
-
+        
         <!-- Tombol Tambah Produk -->
         <a href="{% url 'dashboard_create' %}" class="btn btn-primary">+ Tambah Produk</a>
     </div>
@@ -41,18 +37,20 @@
         </thead>
         <tbody>
             <!-- Loop data produk -->
-            {% for produk in produk_list %}
+            {% for produk in page_obj %}
             <tr>
                 <td>{{ forloop.counter }}</td>
                 <td>{{ produk.kode_produk }}</td>
                 <td>{{ produk.nama_produk }}</td>
                 <td>{{ produk.stock }}</td>
-                <td>Rp.{{ produk.harga_jual|floatformat:0 }}</td>
+                <!-- <td>Rp.{{ produk.harga_jual|floatformat:0 }}</td> -->
+
+                <td>Rp. {{ produk.harga_jual|dot_separator }}</td>
                 <td>
                     <a href="{% url 'dashboard_edit' produk.kode_produk %}" class="btn btn-sm btn-warning">Edit</a>
-                    <a href="{% url 'dashboard_delete' produk.kode_produk %}"
-                    class="btn btn-sm btn-danger"
-                    onclick="return confirm('Apakah Anda yakin ingin menghapus produk ini?')">Hapus</a>
+                    <button class="btn btn-sm btn-danger"
+                        onclick="confirmDelete({{ produk.kode_produk }})">Hapus</button>
+
                 </td>
             </tr>
             {% empty %}
@@ -65,8 +63,90 @@
 
     <!-- Pagination -->
     <div class="d-flex justify-content-between align-items-center">
-        <p>Showing 1 to {{ produk_list|length }} of {{ produk_list|length }} entries</p>
+        <p>Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ page_obj.paginator.count }} entries</p>
+        <nav>
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?search={{ request.GET.search }}&page=1" aria-label="First">
+                        <span aria-hidden="true">&laquo;&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link"
+                        href="?search={{ request.GET.search }}&page={{ page_obj.previous_page_number }}"
+                        aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                <li class="page-item {% if num == page_obj.number %}active{% endif %}">
+                    <a class="page-link" href="?search={{ request.GET.search }}&page={{ num }}">{{ num }}</a>
+                </li>
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?search={{ request.GET.search }}&page={{ page_obj.next_page_number }}"
+                        aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?search={{ request.GET.search }}&page={{ page_obj.paginator.num_pages }}"
+                        aria-label="Last">
+                        <span aria-hidden="true">&raquo;&raquo;</span>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+
     </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    function confirmDelete(productId) {
+        Swal.fire({
+            title: 'Data produk akan dihapus',
+            text: 'Data tidak akan bisa dikembalikan!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya, Hapus!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Ini AJAX dashboard/delete/<str:kode_produk>/
+                fetch(`/dashboard/delete/${productId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    }
+                }).then(response => {
+                    if (response.ok) {
+                        Swal.fire(
+                            'Deleted!',
+                            'Produk telah dihapus.',
+                            'success'
+                        ).then(() => {
+                            // Reload the page after success
+                            window.location.reload();
+                        });
+                    } else {
+                        Swal.fire(
+                            'Error!',
+                            'Ada masalah aat menghapus produk.',
+                            'error'
+                        );
+                    }
+                });
+            }
+        });
+    }
+</script>
 
 {% endblock content %}

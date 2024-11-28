@@ -1,10 +1,10 @@
 {% extends 'base.html' %}
 
-{% block title %}Re-Stok Produk{% endblock title %}
-
+{% block title %}Re-Stok Form{% endblock title %}
+ 
 {% block content %}
 <div class="container-fluid my-3">
-    <div class="row">
+    <div class="row"> 
         <div class="col-md-12">
             <div class="card mb-3">
                 <div class="card-header">Re-Stok Produk</div>
@@ -13,7 +13,7 @@
                         {% csrf_token %}
                         <div class="row g-3">
                             <!-- Kode Produk -->
-                            <div class="col-md-4">
+                            <div class="md-4">
                                 <label for="kode_produk" class="form-label">Kode Produk</label>
                                 <input type="text" id="kode_produk" name="kode_produk" 
                                     class="form-control" 
@@ -22,7 +22,7 @@
                             </div>
 
                             <!-- Nama Produk -->
-                            <div class="col-md-4">
+                            <div class="md-4">
                                 <label for="nama_produk" class="form-label">Nama Produk</label>
                                 <input type="text" id="nama_produk" name="nama_produk" 
                                     class="form-control" 
@@ -31,7 +31,7 @@
                             </div>
 
                             <!-- Jumlah Re-Stok -->
-                            <div class="col-md-4">
+                            <div class="md-4">
                                 <label for="restock" class="form-label">Jumlah Re-Stok</label>
                                 <input type="number" id="restock" name="restock" 
                                     class="form-control" 
@@ -40,7 +40,7 @@
                             </div>
 
                             <!-- Note -->
-                            <div class="col-md-12">
+                            <div class="md-12">
                                 <label for="note" class="form-label">Catatan</label>
                                 <textarea id="note" name="note" 
                                     class="form-control" 
@@ -49,7 +49,7 @@
                             </div>
 
                             <!-- Tombol Aksi -->
-                            <div class="col-md-12 text-end">
+                            <div class="md-12 text-end">
                                 <button type="button" class="btn btn-danger" onclick="window.history.back();">Kembali</button>
                                 <button type="submit" class="btn btn-primary">Simpan</button>
                             </div>
@@ -62,12 +62,13 @@
 </div>
 
 <script>
-    document.getElementById('kode_produk').addEventListener('change', function () {
+    document.getElementById('kode_produk').addEventListener('keydown', function (event) {
+    if (event.key === 'Enter') {
+        event.preventDefault(); // Mencegah submit form default
         const kodeProduk = this.value.trim();
 
-        // Hanya lakukan permintaan jika kode produk tidak kosong
         if (kodeProduk !== '') {
-            fetch(`/produk-detail/?kode_produk=${kodeProduk}`, {
+            fetch(`/produk-detail/${kodeProduk}`, {
                 method: 'GET',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
@@ -77,11 +78,11 @@
             .then(data => {
                 const namaProdukField = document.getElementById('nama_produk');
                 
-                if (data.success) {
-                    namaProdukField.value = data.nama_produk;
-                } else {
-                    namaProdukField.value = '';
+                if (data.error) {
                     alert(data.error);
+                    namaProdukField.value = '';
+                } else {
+                    namaProdukField.value = data.nama_produk;
                 }
             })
             .catch(error => {
@@ -89,6 +90,9 @@
                 alert('Terjadi kesalahan saat mengambil data produk.');
             });
         }
-    });
+    }
+});
+
+
 </script>
 {% endblock content %}
