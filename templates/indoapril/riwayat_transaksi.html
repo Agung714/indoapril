@@ -5,41 +5,38 @@
 
 {% block title %}Beranda{% endblock title %}
  
-{% block content %} 
+{% block content %}  
 
 <div class="container mt-5">
-    <h2 class="text-center mb-4">Riwayat Re-Stock</h2>
+    <h2 class="text-center mb-4">Riwayat Transaksi</h2>
 
-    <!-- Tombol Tambah Produk -->
-    <div class="d-flex justify-content-end mb-3">
-       <a href="{% url 'restok_create' %}" class="btn btn-primary">+ Tambah Stock</a>
-        </div>
+   <!-- Search Bar dan Tombol Tambah Produk -->
 
-    <!-- Tabel Restok -->
-     <!-- LEBIH BAIK NAMPILIN DARI YANG TERBARU -->
+    <!-- Tabel Produk -->
     <table class="table table-bordered table-striped">
         <thead class="thead-dark">
             <tr>
                 <th>No.</th>
-                <th>Kode</th>
+                <th>Nomor Invoice</th>
                 <th>Tanggal</th>
-                <th>Stock Baru</th>
-                <th>Kode Produk</th>
-                <th>Note</th>
-                <!-- <th>Opsi</th> -->
+                <th>Total</th>
+                <th>Pembayaran</th>
+                <th>Kembalian</th>
+                <th>Aksi</th>
             </tr>
         </thead>
         <tbody>
             <tr>
                 <td>1</td>
-                <td>0001</td>
-                <td>30/01/2004</td>
-                <td>300</td>
-                <td>001</td>
-                <td>opsional</td>
-                <!-- <td> 
-                    <a href="{% url 'dashboard_edit' %}" class="btn btn-sm btn-warning">Edit</a>
-                </td> -->
+                <td>1</td>
+                <td>11/17/2024, 5:20:52 PM</td>
+                <td>100000</td>
+                <td>100000</td>
+                <td>0</td>
+                <td> 
+                    <a href="{% url 'riwayat_detail' %}" class="btn btn-sm btn-primary">Detail</a>
+                    <!-- <a href="" class="btn btn-sm btn-primary">Hapus</a> -->
+                </td>
             </tr>
             
         </tbody>
@@ -47,7 +44,7 @@
     
     <!-- Pagination -->
     <div class="d-flex justify-content-between align-items-center">
-        <p>Showing 1 to {{ stok_list|length }} of {{ stok_list|length }} entries</p>
+        <p>Showing 1 to {{ produk_list|length }} of {{ produk_list|length }} entries</p>
         <!-- Pagination controls can be added here -->
     </div>
 

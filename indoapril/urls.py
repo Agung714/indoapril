@@ -10,4 +10,6 @@ urlpatterns = [
     path('restok/', views.restok_view, name='restok'),
     path('restok/create', views.restok_create, name='restok_create'),
     path('produk-detail/<str:kode_produk>/', views.produk_detail, name='produk_detail'),
+    path('riwayat/', views.riwayat_view, name='riwayat'),
+    path('riwayat/detail', views.riwayat_detail, name='riwayat_detail'),
 ]

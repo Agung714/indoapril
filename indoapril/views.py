@@ -127,3 +127,11 @@ def produk_detail(request, kode_produk):
         })
     except Produk.DoesNotExist:
         return JsonResponse({'error': 'Produk tidak ditemukan.'}, status=404)
+    
+@login_required
+def riwayat_view(request):
+    return render(request, 'indoapril/riwayat_transaksi.html')
+
+@login_required
+def riwayat_detail(request):
+    return render(request, 'indoapril/transaksi_detail.html')
