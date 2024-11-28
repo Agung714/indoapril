@@ -1,93 +1,261 @@
 {% extends 'base.html' %}
-
 {% load static %}
 
 {% block title %}Transaksi{% endblock title %}
 
 {% block content %}
+<div class="container-fluid my-3">
+    <div class="row">
+        <div class="col-md-12">
+            <!-- Form Transaksi -->
+            <div class="card mb-3">
+                <div class="card-header">Transaksi</div>
+                <div class="card-body">
+                    <form id="form-transaksi" class="row g-3">
+                        <div class="col-md-2">
+                            <input type="text" id="kode-produk" class="form-control" placeholder="Kode Produk">
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" id="nama-produk" class="form-control" placeholder="Nama Produk" readonly>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" id="harga" class="form-control" placeholder="Harga" readonly>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" id="stock" class="form-control" placeholder="Stock" readonly>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="number" id="jumlah" class="form-control" placeholder="Jumlah">
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" id="subtotal" class="form-control" placeholder="Subtotal" readonly>
+                        </div>
+                        <div class="col-md-12 text-end">
+                            <button type="button" class="btn btn-primary" id="btn-add">Tambah</button>
+                            <button type="reset" class="btn btn-danger">Reset</button>
+                        </div>
+                    </form>
 
-    <!-- Main Content -->
-    <div class="container-fluid my-3">
-        <div class="row">
-            <div class="col-md-12">
-                <!-- Form Transaksi -->
-                <div class="card mb-3">
-                    <div class="card-header">Transaksi</div>
-                    <div class="card-body">
-                        <form class="row g-3">
-                            <div class="col-md-2">
-                                <input type="text" class="form-control" placeholder="Kode Produk" readonly>
-                            </div>
-                            <div class="col-md-2">
-                                <input type="text" class="form-control" placeholder="Nama Produk" readonly>
-                            </div>
-                            <div class="col-md-2">
-                                <input type="text" class="form-control" placeholder="Harga" readonly>
-                            </div>
-                            <div class="col-md-2">
-                                <input type="text" class="form-control" placeholder="Stock" readonly>
-                            </div>
-                            <div class="col-md-2">
-                                <input type="number" class="form-control" placeholder="Jumlah">
-                            </div>
-                            <div class="col-md-2">
-                                <input type="text" class="form-control" placeholder="Subtotal" readonly>
-                            </div>
-                            <div class="col-md-12 text-end">
-                                <button type="reset" class="btn btn-danger">Reset</button>
-                            </div>
-                        </form>
+                    <!-- Table Transaksi -->
+                    <table class="table table-bordered mt-3" id="table-transaksi">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Kode Produk</th>
+                                <th>Nama Produk</th>
+                                <th>Harga</th>
+                                <th>Jumlah</th>
+                                <th>Subtotal</th>
+                                <th>Opsi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="7" class="text-center">No data available in table</td>
+                            </tr>
+                        </tbody>
+                    </table>
 
-                        <!-- Table Transaksi -->
-                        <table class="table table-bordered mt-3">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Kode Produk</th>
-                                    <th>Nama Produk</th>
-                                    <th>Harga</th>
-                                    <th>Jumlah</th>
-                                    <th>Subtotal</th>
-                                    <th>Opsi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td colspan="7" class="text-center">No data available in table</td>
-                                </tr>
-                            </tbody>
-                        </table>
-
-                        <h4 class="text-end">Rp. 0</h4>
-                    </div>
+                    <h4 class="text-end" id="total-harga">Rp. 0</h4>
                 </div>
+            </div>
 
-                <!-- Form Pembayaran -->
-                <div class="card">
-                    <div class="card-body">
-                        <form class="row g-3">
-                            <!-- <div class="col-md-12">
-                                <textarea class="form-control" placeholder="Catatan Transaksi (Jika Ada)"></textarea>
-                            </div> -->
-                            <div class="col-md-4">
-                                <label>Pembayaran:</label>
-                                <input type="number" class="form-control">
-                            </div>
-                            <div class="col-md-4">
-                                <label>Kembalian:</label>
-                                <input type="number" class="form-control" readonly>
-                            </div>
-                            <div class="col-md-4 text-end">
-                                <!-- <button type="button" class="btn btn-secondary">Cetak</button> -->
-                                <button type="reset" class="btn btn-danger">Reset</button>
-                                <button type="submit" class="btn btn-primary">Simpan</button>
-                            </div>
-                        </form>
-                    </div>
+            <!-- Form Pembayaran -->
+            <div class="card">
+                <div class="card-body">
+                    <form id="form-pembayaran" class="row g-3">
+                        <div class="col-md-4">
+                            <label>Pembayaran:</label>
+                            <input type="number" id="pembayaran" class="form-control">
+                        </div>
+                        <div class="col-md-4">
+                            <label>Kembalian:</label>
+                            <input type="text" id="kembalian" class="form-control" readonly>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <button type="reset" class="btn btn-danger">Reset</button>
+                            <button type="submit" class="btn btn-primary">Simpan</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
+<script>
+    let totalHarga = 0;
 
-{% endblock content %}
+    const tableBody = document.querySelector("#table-transaksi tbody");
+    const totalHargaEl = document.querySelector("#total-harga");
+
+    // Fungsi untuk mendapatkan nilai dari cookie
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // Mengambil detail produk berdasarkan kode produk
+    document.querySelector("#kode-produk").addEventListener("change", function () {
+        const kodeProduk = this.value;
+
+        fetch(`/produk-detail/${kodeProduk}/`)
+            .then(response => response.json())
+            .then(data => {
+                if (!data.error) {
+                    document.querySelector("#nama-produk").value = data.nama_produk;
+                    document.querySelector("#harga").value = data.harga;
+                    document.querySelector("#stock").value = data.stock;
+                } else {
+                    alert(data.error);
+                }
+            })
+            .catch(error => console.error("Error:", error));
+    });
+
+    // Menghitung subtotal ketika jumlah diubah
+    document.querySelector("#jumlah").addEventListener("input", function () {
+        const harga = parseFloat(document.querySelector("#harga").value) || 0;
+        const jumlah = parseInt(this.value) || 0;
+        const subtotal = harga * jumlah;
+        document.querySelector("#subtotal").value = subtotal ? subtotal.toFixed(2) : '';
+    });
+
+    // Menambahkan item ke tabel transaksi
+    document.querySelector("#btn-add").addEventListener("click", function () {
+        const kodeProduk = document.querySelector("#kode-produk").value;
+        const namaProduk = document.querySelector("#nama-produk").value;
+        const harga = parseFloat(document.querySelector("#harga").value);
+        const jumlah = parseInt(document.querySelector("#jumlah").value);
+        const stock = parseInt(document.querySelector("#stock").value);
+
+        if (!kodeProduk || !namaProduk || isNaN(harga) || isNaN(jumlah) || jumlah <= 0) {
+            alert("Lengkapi semua data sebelum menambahkan.");
+            return;
+        }
+
+        if (jumlah > stock) {
+            alert("Jumlah tidak boleh lebih besar dari stok.");
+            return;
+        }
+
+        const subtotal = harga * jumlah;
+        totalHarga += subtotal;
+        totalHargaEl.textContent = `Rp. ${totalHarga.toFixed(2)}`;
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td></td>
+            <td>${kodeProduk}</td>
+            <td>${namaProduk}</td>
+            <td>${harga.toFixed(2)}</td>
+            <td class="jumlah">${jumlah}</td>
+            <td class="subtotal">${subtotal.toFixed(2)}</td>
+            <td>
+                <button class="btn btn-danger btn-sm btn-delete">Hapus</button>
+            </td>
+        `;
+        tableBody.appendChild(row);
+
+        updateRowNumbers();
+
+        // Tambahkan event listener untuk tombol hapus
+        row.querySelector(".btn-delete").addEventListener("click", function () {
+            const subtotal = parseFloat(row.querySelector(".subtotal").textContent);
+            totalHarga -= subtotal;
+            totalHargaEl.textContent = `Rp. ${totalHarga.toFixed(2)}`;
+            row.remove();
+            updateRowNumbers();
+        });
+
+        // Reset input setelah menambahkan item
+        resetInputs();
+    });
+
+    // Mengupdate nomor urut row
+    function updateRowNumbers() {
+        const rows = tableBody.querySelectorAll("tr");
+        rows.forEach((row, index) => {
+            row.querySelector("td:first-child").textContent = index + 1;
+        });
+    }
+
+    // Fungsi untuk mereset input setelah menambahkan item
+    function resetInputs() {
+        document.querySelector("#kode-produk").value = '';
+        document.querySelector("#nama-produk").value = '';
+        document.querySelector("#harga").value = '';
+        document.querySelector("#stock").value = '';
+        document.querySelector("#jumlah").value = '';
+        document.querySelector("#subtotal").value = '';
+    }
+
+    // Menangani submit form pembayaran dan menghitung kembalian
+    document.querySelector("#form-pembayaran").addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const rows = tableBody.querySelectorAll("tr");
+        if (rows.length === 0) {
+            alert("Tidak ada item dalam transaksi.");
+            return;
+        }
+
+        const items = [];
+        rows.forEach(row => {
+            const kodeProdukEl = row.querySelector("td:nth-child(2)");
+            const jumlahEl = row.querySelector(".jumlah");
+
+            if (kodeProdukEl && jumlahEl) {
+                const kodeProduk = kodeProdukEl.textContent;
+                const jumlah = parseInt(jumlahEl.textContent);
+                items.push({ produk_id: kodeProduk, jumlah });
+            }
+        });
+
+        const pembayaran = parseFloat(document.querySelector("#pembayaran").value);
+        if (isNaN(pembayaran) || pembayaran <= 0) {
+            alert("Masukkan jumlah pembayaran yang valid.");
+            return;
+        }
+
+        if (pembayaran < totalHarga) {
+            alert("Pembayaran tidak mencukupi.");
+            return;
+        }
+
+        const kembalian = pembayaran - totalHarga;
+
+        fetch("/transaksi/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCookie("csrftoken"),
+            },
+            body: JSON.stringify({ items, pembayaran, total_harga: totalHarga, kembalian }),
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(`Transaksi berhasil disimpan! Kembalian: Rp. ${kembalian.toFixed(2)}`);
+                    window.location.reload();
+                } else {
+                    alert(data.error);
+                }
+            })
+            .catch(error => {
+                console.error("Terjadi kesalahan:", error);
+                alert("Terjadi kesalahan dalam menyimpan transaksi.");
+            });
+    });
+</script>
+{% endblock %}

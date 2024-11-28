@@ -9,18 +9,5 @@ urlpatterns = [
     path('dashboard/edit/', views.dashboard_edit, name='dashboard_edit'),
     path('restok/', views.restok_view, name='restok'),
     path('restok/create', views.restok_create, name='restok_create'),
+    path('produk-detail/<str:kode_produk>/', views.produk_detail, name='produk_detail'),
 ]
-
-
-
-# urlpatterns = [
-#     path('about', views.about),
-#     # path('login', views.login),
-#     path('', views.homepage), 
-#     path('login', views.login, name='login'), # login
-#     path('karyawan', views.karyawan_index, name='karyawan_index'), # Read
-#     path('karyawan/create/', views.karyawan_create, name='karyawan_create'),# Create
-#     path('karyawan/update/<int:karyawan_id>/', views.karyawan_update, name='karyawan_update'),
-#     path('karyawan/delete/<int:karyawan_id>', views.karyawan_delete, name='karyawan_delete'),
-     
-# ]  

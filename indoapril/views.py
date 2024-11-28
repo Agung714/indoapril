@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
-from .models import UserRole, Produk
+from django.http import JsonResponse
+from .models import UserRole, Produk, Transaksi, ItemTransaksi
 from django.contrib import messages
 from .forms import ProdukForm  
 
@@ -27,10 +28,6 @@ def login_view(request):
             error = "Username atau password salah."
 
     return render(request, 'indoapril/login.html', {'error': error})
-
-@login_required
-def transaksi_view(request):
-    return render(request, 'indoapril/transaksi.html')
 
 @login_required
 def dashboard_view(request):
@@ -67,27 +64,66 @@ def restok_view(request):
 def restok_create(request):
     return render(request, 'indoapril/formstok.html')
 
-# def dashboard_create(request):
-#     if request.method == 'POST':
-#         form = ProdukForm(request.POST)
-#         if form.is_valid():
-#             form.save()
-#             return redirect('dashboard')
-#     else:
-#         form = ProdukForm()
+@login_required
+def transaksi_view(request):
+    if request.method == "POST":
+        from json import loads  # Import untuk parsing JSON
 
-#     return render(request, 'indoapril/form.html', {'form': form})
+        try:
+            # Parsing dan validasi data POST
+            data = loads(request.body)
+            items = data.get("items", [])
+            pembayaran = data.get("pembayaran", 0)
 
+            if not items:
+                return JsonResponse({'error': 'Tidak ada item dalam transaksi.'}, status=400)
 
-# @login_required
-# def dashboard_edit(request, id):
-#     produk = get_object_or_404(Produk, id=id)
-#     if request.method == 'POST':
-#         form = ProdukForm(request.POST, instance=produk)
-#         if form.is_valid():
-#             form.save() 
-#             return redirect('dashboard')
-#     else:
-#         form = ProdukForm(instance=produk)
+            if pembayaran <= 0:
+                return JsonResponse({'error': 'Pembayaran harus lebih besar dari 0.'}, status=400)
 
-#     return render(request, 'indoapril/form.html', {'form': form})
+            # Membuat transaksi baru
+            transaksi = Transaksi.objects.create(total_harga=0, pembayaran=pembayaran, kembalian=0)
+            total = 0
+
+            for item in items:
+                produk_id = item.get('produk_id')
+                jumlah = int(item.get('jumlah', 0))
+
+                produk = get_object_or_404(Produk, kode_produk=produk_id)
+
+                if produk.stock < jumlah:
+                    return JsonResponse({'error': f"Stok produk {produk.nama_produk} tidak mencukupi."}, status=400)
+
+                subtotal = produk.harga_jual * jumlah
+                ItemTransaksi.objects.create(
+                    transaksi=transaksi,
+                    produk=produk,
+                    jumlah=jumlah,
+                    subtotal=subtotal
+                )
+                produk.stock -= jumlah
+                produk.save()
+                total += subtotal
+
+            transaksi.total_harga = total
+            transaksi.kembalian = pembayaran - total
+            transaksi.save()
+
+            return JsonResponse({'success': True, 'transaksi_id': transaksi.id, 'kembalian': transaksi.kembalian})
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=400)
+
+    produk = Produk.objects.all()
+    return render(request, 'indoapril/transaksi.html', {'produk': produk})
+
+def produk_detail(request, kode_produk):
+    try:
+        produk = Produk.objects.get(kode_produk=kode_produk)
+        return JsonResponse({
+            'kode_produk': produk.kode_produk,
+            'nama_produk': produk.nama_produk,
+            'harga': float(produk.harga_jual),
+            'stock': produk.stock
+        })
+    except Produk.DoesNotExist:
+        return JsonResponse({'error': 'Produk tidak ditemukan.'}, status=404)
