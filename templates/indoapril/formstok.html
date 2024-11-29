@@ -1,57 +1,81 @@
 {% extends 'base.html' %}
 
 {% block title %}Re-Stok Form{% endblock title %}
- 
+
 {% block content %}
 <div class="container-fluid my-3">
-    <div class="row"> 
+    <!-- Container dengan margin vertikal 3 (my-3) untuk memberi jarak pada seluruh container -->
+    <div class="row">
+        <!-- Row untuk mengatur kolom-kolom dalam baris -->
         <div class="col-md-12">
+            <!-- Kolom penuh pada ukuran layar medium ke atas -->
             <div class="card mb-3">
+                <!-- Card dengan margin bawah 3 (mb-3) -->
                 <div class="card-header">Re-Stok Produk</div>
+                <!-- Header card -->
                 <div class="card-body">
+                    <!-- Body card untuk konten form -->
                     <form method="post" action="{% url 'restok_create' %}">
+                        <!-- Form untuk mengirim data dengan method POST ke URL 'restok_create' -->
                         {% csrf_token %}
+                        <!-- Token CSRF untuk keamanan form -->
                         <div class="row g-3">
+                            <!-- Row dengan gutter (g-3) untuk memberi jarak antar kolom -->
                             <!-- Kode Produk -->
                             <div class="md-4">
+                                <!-- Kolom dengan lebar medium (md) 4 unit -->
                                 <label for="kode_produk" class="form-label">Kode Produk</label>
-                                <input type="text" id="kode_produk" name="kode_produk" 
-                                    class="form-control" 
-                                    placeholder="Masukkan Kode Produk" 
+                                <!-- Label untuk input kode produk -->
+                                <input type="text" id="kode_produk" name="kode_produk"
+                                    class="form-control"
+                                    placeholder="Masukkan Kode Produk"
                                     required>
+                                <!-- Input field untuk kode produk -->
                             </div>
 
                             <!-- Nama Produk -->
                             <div class="md-4">
+                                <!-- Kolom dengan lebar medium (md) 4 unit -->
                                 <label for="nama_produk" class="form-label">Nama Produk</label>
-                                <input type="text" id="nama_produk" name="nama_produk" 
-                                    class="form-control" 
-                                    placeholder="Nama Produk" 
+                                <!-- Label untuk input nama produk -->
+                                <input type="text" id="nama_produk" name="nama_produk"
+                                    class="form-control"
+                                    placeholder="Nama Produk"
                                     readonly>
+                                <!-- Input field untuk nama produk yang bersifat read-only -->
                             </div>
 
                             <!-- Jumlah Re-Stok -->
                             <div class="md-4">
+                                <!-- Kolom dengan lebar medium (md) 4 unit -->
                                 <label for="restock" class="form-label">Jumlah Re-Stok</label>
-                                <input type="number" id="restock" name="restock" 
-                                    class="form-control" 
-                                    placeholder="Jumlah Re-Stok" 
+                                <!-- Label untuk input jumlah re-stok -->
+                                <input type="number" id="restock" name="restock"
+                                    class="form-control"
+                                    placeholder="Jumlah Re-Stok"
                                     required>
+                                <!-- Input field untuk jumlah re-stok -->
                             </div>
 
                             <!-- Note -->
                             <div class="md-12">
+                                <!-- Kolom penuh (12 unit) untuk catatan -->
                                 <label for="note" class="form-label">Catatan</label>
-                                <textarea id="note" name="note" 
-                                    class="form-control" 
-                                    rows="3" 
+                                <!-- Label untuk input catatan -->
+                                <textarea id="note" name="note"
+                                    class="form-control"
+                                    rows="3"
                                     placeholder="Tambahkan catatan (opsional)"></textarea>
+                                <!-- Textarea untuk catatan, dengan 3 baris tinggi -->
                             </div>
 
                             <!-- Tombol Aksi -->
                             <div class="md-12 text-end">
+                                <!-- Kolom penuh (12 unit) dengan teks rata kanan (text-end) -->
                                 <button type="button" class="btn btn-danger" onclick="window.history.back();">Kembali</button>
+                                <!-- Tombol Kembali dengan warna merah (btn-danger) -->
                                 <button type="submit" class="btn btn-primary">Simpan</button>
+                                <!-- Tombol Simpan dengan warna biru (btn-primary) -->
                             </div>
                         </div>
                     </form>
@@ -63,36 +87,43 @@
 
 <script>
     document.getElementById('kode_produk').addEventListener('keydown', function (event) {
-    if (event.key === 'Enter') {
-        event.preventDefault(); // Mencegah submit form default
-        const kodeProduk = this.value.trim();
+        // Menambahkan event listener pada input kode produk untuk mendeteksi ketika tombol 'Enter' ditekan
+        if (event.key === 'Enter') {
+            event.preventDefault(); // Mencegah submit form default
+            const kodeProduk = this.value.trim();
 
-        if (kodeProduk !== '') {
-            fetch(`/produk-detail/${kodeProduk}`, {
-                method: 'GET',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                const namaProdukField = document.getElementById('nama_produk');
-                
-                if (data.error) {
-                    alert(data.error);
-                    namaProdukField.value = '';
-                } else {
-                    namaProdukField.value = data.nama_produk;
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Terjadi kesalahan saat mengambil data produk.');
-            });
+            if (kodeProduk !== '') {
+                fetch(`/produk-detail/${kodeProduk}`, {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                        // Memastikan permintaan diterima sebagai AJAX
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const namaProdukField = document.getElementById('nama_produk');
+                    
+                    if (data.error) {
+                        alert(data.error);
+                        namaProdukField.value = '';
+                    } else {
+                        namaProdukField.value = data.nama_produk;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Terjadi kesalahan saat mengambil data produk.');
+                });
+            }
         }
-    }
-});
-
-
+    });
 </script>
+<!-- container-fluid: Mengatur container agar lebar penuh (responsive) di semua ukuran layar.
+my-3: Memberikan margin vertikal (atas dan bawah) sebesar 1rem.
+row: Digunakan untuk membuat baris dalam grid.
+col-md-12: Kolom penuh (12 unit) pada ukuran layar medium ke atas.
+card: Kelas untuk membuat elemen berbentuk kotak dengan border dan shadow.
+card-header, card-body: Kelas untuk bagian header dan body dari card.
+form-control: Kelas untuk membuat elemen input memiliki tampilan penuh dengan padding. -->
 {% endblock content %}

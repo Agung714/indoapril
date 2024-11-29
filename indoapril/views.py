@@ -1,62 +1,65 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from .models import UserRole, Produk, Transaksi, ItemTransaksi, Restok
 from django.contrib import messages
+from django.core.paginator import Paginator
+from django.db.models import Sum
+from datetime import datetime
+from rest_framework.viewsets import ModelViewSet
+from rest_framework.filters import SearchFilter
+import requests
+from .models import UserRole, Produk, Transaksi, ItemTransaksi, Restok
 from .forms import ProdukForm
 from .decorators import role_required
-from rest_framework.viewsets import ModelViewSet
-from .models import Produk, Transaksi, Restok
 from .serializers import ProdukSerializer, TransaksiSerializer, RestokSerializer
-import requests
-from django.core.paginator import Paginator
-from rest_framework.filters import SearchFilter
-from django.db.models import Sum, F
-from datetime import datetime
+
 
 # URL base API
 API_BASE_URL = "http://127.0.0.1:8000/api"
-# API_BASE_URL = "http://localhost:8000/api"
-# ====================== Login View ====================== 
+# ====================== Login & Logout Views ======================
 def login_view(request):
-    error = None
-    if request.method == "POST":
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
-
-        if user:
+    """
+    Mengautentikasi pengguna berdasarkan username dan password.
+    Jika berhasil, pengguna diarahkan ke halaman sesuai perannya.
+    """
+    error = None  # Variabel untuk menyimpan pesan kesalahan
+    if request.method == "POST":  # Jika form dikirim melalui metode POST
+        username = request.POST['username']  # Ambil username dari input form
+        password = request.POST['password']  # Ambil password dari input form
+        user = authenticate(request, username=username, password=password)  # Verifikasi kredensial
+        if user:  # Jika autentikasi berhasil
             try:
-                role = user.user_role.role
-                login(request, user)
-
+                role = user.user_role.role  # Ambil peran pengguna dari model UserRole
+                login(request, user)  # Login pengguna
+                # Redirect berdasarkan peran pengguna
                 if role == 'kasir':
-                    return redirect('transaksi')
+                    return redirect('transaksi')  # Kasir diarahkan ke halaman transaksi
                 elif role == 'manajer':
-                    return redirect('dashboard')
+                    return redirect('dashboard')  # Manajer diarahkan ke halaman dashboard
             except UserRole.DoesNotExist:
-                error = "Akun tidak memiliki peran yang valid."
+                error = "Akun tidak memiliki peran yang valid."  # Error jika peran tidak ditemukan
         else:
-            error = "Username atau password salah."
-
-    return render(request, 'indoapril/login.html', {'error': error})
-
-# ====================== Logout View ======================
-from django.contrib.auth import logout
-from django.shortcuts import redirect
+            error = "Username atau password salah."  # Error jika autentikasi gagal
+    return render(request, 'indoapril/login.html', {'error': error})  # Tampilkan halaman login dengan error
 
 def logout_view(request):
-    logout(request)  # Django akan menghapus sesi user
+    """
+    Logout pengguna yang sedang login dan menghapus sesi mereka.
+    """
+    logout(request)  # Menghapus sesi pengguna
     return redirect('login')  # Arahkan kembali ke halaman login
 
 # ====================== Dashboard View (Read) ======================
 @login_required
 @role_required('manajer')
 def dashboard_view(request):
-    search_query = request.GET.get('search', '')
-
-    produk_list = []
+    """
+    Menampilkan daftar produk dengan data yang diambil dari API atau database lokal.
+    Mendukung pencarian dan paginasi.
+    """
+    search_query = request.GET.get('search', '')  # Ambil parameter pencarian dari URL
+    produk_list = []  # Inisialisasi daftar produk kosong
     try:
         # Mengambil data dari API
         response = requests.get(f"{API_BASE_URL}/produk/", params={'search': search_query})
@@ -73,7 +76,7 @@ def dashboard_view(request):
     # Pagination: Membatasi jumlah produk per halaman
     paginator = Paginator(produk_list, 10)  # 10 produk per halaman
     page_number = request.GET.get('page')  # Ambil nomor halaman dari parameter URL
-    page_obj = paginator.get_page(page_number)
+    page_obj = paginator.get_page(page_number)  # Ambil data untuk halaman tertentu
 
     return render(request, 'indoapril/dashboard.html', {'page_obj': page_obj})
 
@@ -82,26 +85,25 @@ def dashboard_view(request):
 @login_required
 @role_required('manajer')
 def dashboard_create(request):
-    if request.method == 'POST':
-        form = ProdukForm(request.POST)
-        if form.is_valid():
-            data = form.cleaned_data
+    if request.method == 'POST':  # Proses form jika menggunakan metode POST
+        form = ProdukForm(request.POST)  # Ambil data dari form
+        if form.is_valid():  # Validasi data form
+            data = form.cleaned_data  # Data yang sudah dibersihkan
             try:
-                # Kirim data ke API
-                response = requests.post(f"{API_BASE_URL}/produk/", data=data)
-                response.raise_for_status()  # Periksa jika ada error HTTP
-                messages.success(request, "Produk berhasil ditambahkan ke API!")
+                response = requests.post(f"{API_BASE_URL}/produk/", data=data)  # Kirim data ke API
+                response.raise_for_status()  # Periksa jika API memberikan error
+                messages.success(request, "Produk berhasil ditambahkan ke API!")  # Notifikasi sukses
             except requests.exceptions.RequestException:
-                # Jika gagal, simpan ke database lokal
-                form.save()
-                messages.warning(request, "Produk ditambahkan ke lokal karena API gagal.")
-            return redirect('dashboard')
+                form.save()  # Simpan ke database lokal jika API gagal
+                messages.warning(request, "Produk ditambahkan ke lokal karena API gagal.")  # Notifikasi fallback
+            return redirect('dashboard')  # Redirect ke halaman dashboard
         else:
-            messages.error(request, "Terjadi kesalahan. Periksa data yang Anda masukkan.")
+            messages.error(request, "Terjadi kesalahan. Periksa data yang Anda masukkan.")  # Notifikasi error validasi
     else:
-        form = ProdukForm()
+        form = ProdukForm()  # Buat form kosong untuk input
+    return render(request, 'indoapril/form.html', {'form': form})  # Kirim form ke template
 
-    return render(request, 'indoapril/form.html', {'form': form})
+
 
 # ====================== Dashboard Edit ======================
 @login_required
@@ -196,69 +198,72 @@ def restok_create(request):
 # ====================== Riwayat ====================== 
 @login_required
 def laporan_transaksi(request):
-    # Ambil parameter bulan dan tahun dari query string
+    """
+    Menampilkan laporan transaksi berdasarkan filter bulan dan tahun.
+    Menyediakan informasi ringkasan seperti total transaksi, pendapatan, dan produk yang terjual.
+    Data juga mendukung fitur paginasi untuk menampilkan transaksi per halaman.
+    """
+    # Ambil parameter bulan dan tahun dari query string (default adalah bulan dan tahun saat ini)
     try:
-        bulan = int(request.GET.get('bulan', datetime.now().month))
-        tahun = int(request.GET.get('tahun', datetime.now().year))
+        bulan = int(request.GET.get('bulan', datetime.now().month))  # Ambil bulan, atau gunakan bulan saat ini
+        tahun = int(request.GET.get('tahun', datetime.now().year))  # Ambil tahun, atau gunakan tahun saat ini
     except ValueError:
+        # Jika parameter bulan atau tahun tidak valid, gunakan nilai default
         bulan = datetime.now().month
         tahun = datetime.now().year
 
-    # Filter transaksi berdasarkan bulan dan tahun
+    # Filter transaksi berdasarkan bulan dan tahun yang dipilih
     transaksi_queryset = Transaksi.objects.filter(
-        tanggal__year=tahun,
-        tanggal__month=bulan
-    ).order_by('-tanggal')  # Urutkan berdasarkan tanggal terbaru
+        tanggal__year=tahun,  # Filter tahun transaksi
+        tanggal__month=bulan  # Filter bulan transaksi
+    ).order_by('-tanggal')  # Urutkan transaksi dari yang terbaru
 
-    # Ringkasan data
-    total_transaksi = transaksi_queryset.count()
-    total_pendapatan = transaksi_queryset.aggregate(total=Sum('total_harga'))['total'] or 0
-    total_produk_terjual = ItemTransaksi.objects.filter(transaksi__in=transaksi_queryset).aggregate(
-        total=Sum('jumlah')
-    )['total'] or 0
+    # Ringkasan data untuk laporan
+    total_transaksi = transaksi_queryset.count()  # Total jumlah transaksi
+    total_pendapatan = transaksi_queryset.aggregate(
+        total=Sum('total_harga')  # Jumlahkan semua total harga transaksi
+    )['total'] or 0  # Jika hasil None, gunakan 0
+    total_produk_terjual = ItemTransaksi.objects.filter(
+        transaksi__in=transaksi_queryset  # Filter item berdasarkan transaksi
+    ).aggregate(
+        total=Sum('jumlah')  # Jumlahkan semua produk yang terjual
+    )['total'] or 0  # Jika hasil None, gunakan 0
 
-    # Pagination
-    paginator = Paginator(transaksi_queryset, 10)  # Tampilkan 10 transaksi per halaman
-    page_number = request.GET.get('page')
-    page_obj = paginator.get_page(page_number)
+    # Paginate hasil transaksi menjadi 10 transaksi per halaman
+    paginator = Paginator(transaksi_queryset, 10)  # Tentukan ukuran halaman (10 transaksi per halaman)
+    page_number = request.GET.get('page')  # Ambil nomor halaman dari query string
+    page_obj = paginator.get_page(page_number)  # Ambil data untuk halaman tertentu
 
-    # Daftar bulan dan tahun
-    daftar_bulan = list(range(1, 13))
-    daftar_tahun = list(range(2020, 2030))  # Atur rentang tahun sesuai kebutuhan
+    # Daftar bulan dan tahun untuk dropdown filter
+    daftar_bulan = list(range(1, 13))  # Buat daftar bulan (1 - 12)
+    daftar_tahun = list(range(2020, 2030))  # Rentang tahun (ubah sesuai kebutuhan)
 
-    # Kirim data ke template
+    # Kirim data ke template untuk ditampilkan
     context = {
-        'total_transaksi': total_transaksi,
-        'total_pendapatan': total_pendapatan,
-        'total_produk_terjual': total_produk_terjual,
-        'page_obj': page_obj,
-        'bulan': bulan,
-        'tahun': tahun,
-        'daftar_bulan': daftar_bulan,
-        'daftar_tahun': daftar_tahun,
+        'total_transaksi': total_transaksi,  # Total transaksi dalam bulan dan tahun tersebut
+        'total_pendapatan': total_pendapatan,  # Total pendapatan dari semua transaksi
+        'total_produk_terjual': total_produk_terjual,  # Total produk yang terjual
+        'page_obj': page_obj,  # Objek paginasi untuk transaksi
+        'bulan': bulan,  # Bulan yang dipilih
+        'tahun': tahun,  # Tahun yang dipilih
+        'daftar_bulan': daftar_bulan,  # Daftar bulan untuk dropdown
+        'daftar_tahun': daftar_tahun,  # Daftar tahun untuk dropdown
     }
-    return render(request, 'indoapril/laporan_transaksi.html', context)
+    return render(request, 'indoapril/laporan_transaksi.html', context)  # Render ke template laporan transaksi
 
-
-# def riwayat_view(request):
-#     transaksi_list = Transaksi.objects.all().order_by('-tanggal')
-#     paginator = Paginator(transaksi_list, 10)
-
-#     page_number = request.GET.get('page')
-#     page_obj = paginator.get_page(page_number)
-
-#     return render(request, 'indoapril/riwayat_transaksi.html', {'page_obj': page_obj})
 
 # ====================== Riwayat Detail ====================== 
 @login_required
 def riwayat_detail(request,transaksi_id):
+    # Mengambil transaksi berdasarkan transaksi_id
     transaksi = Transaksi.objects.get(pk=transaksi_id)
+    # Mengambil item terkait dengan transaksi tersebut
     items = transaksi.items.all()  # Ambil item terkait transaksi
+    # Mengirimkan konteks ke template
     context = {
         'transaksi': transaksi,
         'items': items
     }
-    # return render(request, 'transaksi/detail_transaksi.html', context)
     return render(request, 'indoapril/transaksi_detail.html', context)
 
 # ====================== Transaksi ====================== 
@@ -325,11 +330,6 @@ def produk_detail(request, kode_produk):
     except Produk.DoesNotExist:
         return JsonResponse({'error': 'Produk tidak ditemukan.'}, status=404)
     
-# class ProdukListViewSet(ModelViewSet):
-#     queryset = Produk.objects.all()
-#     serializer_class = ProdukSerializer
-
-
 class ProdukListViewSet(ModelViewSet):
     queryset = Produk.objects.all()
     serializer_class = ProdukSerializer
@@ -343,3 +343,12 @@ class TransaksiListViewSet(ModelViewSet):
 class RestokListViewSet(ModelViewSet):
     queryset = Restok.objects.all()
     serializer_class = RestokSerializer
+
+# def riwayat_view(request):
+#     transaksi_list = Transaksi.objects.all().order_by('-tanggal')
+#     paginator = Paginator(transaksi_list, 10)
+
+#     page_number = request.GET.get('page')
+#     page_obj = paginator.get_page(page_number)
+
+#     return render(request, 'indoapril/riwayat_transaksi.html', {'page_obj': page_obj})

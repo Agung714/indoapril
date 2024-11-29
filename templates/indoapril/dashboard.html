@@ -7,25 +7,27 @@
 
 {% block content %}
 
-<div class="container mt-5">
-    <h2 class="text-center mb-4">Data Produk</h2>
-
+<div class="container mt-5"> <!-- Container utama dengan margin atas untuk ruang -->
+    <h2 class="text-center mb-4">Data Produk</h2> <!-- Judul dengan margin bawah untuk jarak -->
+    
     <!-- Search Bar dan Tombol Tambah Produk -->
-    <div class="d-flex justify-content-between mb-3">
+    <div class="d-flex justify-content-between mb-3"> <!-- Flex container untuk tata letak horizontal dengan jarak antar elemen -->
+        
         <!-- Search Bar -->
         <form class="form-inline d-flex justify-content-start" method="GET" action="{% url 'dashboard' %}">
-            <input type="text" name="search" class="form-control me-2" placeholder="Kode Produk"
+            <!-- Input pencarian dengan margin kanan -->
+            <input type="text" name="search" class="form-control me-2" placeholder="Kode Produk" 
                 value="{{ request.GET.search|default:'' }}">
             <button type="submit" class="btn btn-outline-secondary">Cari</button>
         </form>
         
         <!-- Tombol Tambah Produk -->
-        <a href="{% url 'dashboard_create' %}" class="btn btn-primary">+ Tambah Produk</a>
+        <a href="{% url 'dashboard_create' %}" class="btn btn-primary">+ Tambah Produk</a> <!-- Tombol untuk menambah produk -->
     </div>
 
     <!-- Tabel Produk -->
     <table class="table table-bordered table-striped">
-        <thead class="thead-dark">
+        <thead class="thead-dark"> <!-- Bagian kepala tabel dengan latar belakang gelap -->
             <tr>
                 <th>No.</th>
                 <th>Kode Produk</th>
@@ -39,21 +41,21 @@
             <!-- Loop data produk -->
             {% for produk in page_obj %}
             <tr>
-                <td>{{ forloop.counter }}</td>
+                <td>{{ forloop.counter }}</td> <!-- Menampilkan nomor urut -->
                 <td>{{ produk.kode_produk }}</td>
                 <td>{{ produk.nama_produk }}</td>
                 <td>{{ produk.stock }}</td>
-                <!-- <td>Rp.{{ produk.harga_jual|floatformat:0 }}</td> -->
-
+                <!-- Menampilkan harga dengan format angka yang menggunakan pemisah ribuan -->
                 <td>Rp. {{ produk.harga_jual|dot_separator }}</td>
                 <td>
+                    <!-- Tombol untuk mengedit produk -->
                     <a href="{% url 'dashboard_edit' produk.kode_produk %}" class="btn btn-sm btn-warning">Edit</a>
-                    <button class="btn btn-sm btn-danger"
-                        onclick="confirmDelete({{ produk.kode_produk }})">Hapus</button>
-
+                    <!-- Tombol untuk menghapus produk -->
+                    <button class="btn btn-sm btn-danger" onclick="confirmDelete({{ produk.kode_produk }})">Hapus</button>
                 </td>
             </tr>
             {% empty %}
+            <!-- Jika tidak ada data produk -->
             <tr>
                 <td colspan="6" class="text-center">Tidak ada data produk</td>
             </tr>
@@ -63,19 +65,20 @@
 
     <!-- Pagination -->
     <div class="d-flex justify-content-between align-items-center">
+        <!-- Informasi jumlah entri yang ditampilkan -->
         <p>Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ page_obj.paginator.count }} entries</p>
         <nav>
             <ul class="pagination">
                 {% if page_obj.has_previous %}
                 <li class="page-item">
+                    <!-- Tombol untuk menuju halaman pertama -->
                     <a class="page-link" href="?search={{ request.GET.search }}&page=1" aria-label="First">
                         <span aria-hidden="true">&laquo;&laquo;</span>
                     </a>
                 </li>
                 <li class="page-item">
-                    <a class="page-link"
-                        href="?search={{ request.GET.search }}&page={{ page_obj.previous_page_number }}"
-                        aria-label="Previous">
+                    <!-- Tombol untuk menuju halaman sebelumnya -->
+                    <a class="page-link" href="?search={{ request.GET.search }}&page={{ page_obj.previous_page_number }}" aria-label="Previous">
                         <span aria-hidden="true">&laquo;</span>
                     </a>
                 </li>
@@ -83,33 +86,35 @@
 
                 {% for num in page_obj.paginator.page_range %}
                 <li class="page-item {% if num == page_obj.number %}active{% endif %}">
+                    <!-- Menampilkan nomor halaman -->
                     <a class="page-link" href="?search={{ request.GET.search }}&page={{ num }}">{{ num }}</a>
                 </li>
                 {% endfor %}
 
                 {% if page_obj.has_next %}
                 <li class="page-item">
-                    <a class="page-link" href="?search={{ request.GET.search }}&page={{ page_obj.next_page_number }}"
-                        aria-label="Next">
+                    <!-- Tombol untuk menuju halaman berikutnya -->
+                    <a class="page-link" href="?search={{ request.GET.search }}&page={{ page_obj.next_page_number }}" aria-label="Next">
                         <span aria-hidden="true">&raquo;</span>
                     </a>
                 </li>
                 <li class="page-item">
-                    <a class="page-link" href="?search={{ request.GET.search }}&page={{ page_obj.paginator.num_pages }}"
-                        aria-label="Last">
+                    <!-- Tombol untuk menuju halaman terakhir -->
+                    <a class="page-link" href="?search={{ request.GET.search }}&page={{ page_obj.paginator.num_pages }}" aria-label="Last">
                         <span aria-hidden="true">&raquo;&raquo;</span>
                     </a>
                 </li>
                 {% endif %}
             </ul>
         </nav>
-
     </div>
 </div>
 
+<!-- Mengimpor library SweetAlert untuk konfirmasi penghapusan -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     function confirmDelete(productId) {
+        // Konfirmasi penghapusan produk
         Swal.fire({
             title: 'Data produk akan dihapus',
             text: 'Data tidak akan bisa dikembalikan!',
@@ -120,7 +125,7 @@
             confirmButtonText: 'Ya, Hapus!'
         }).then((result) => {
             if (result.isConfirmed) {
-                // Ini AJAX dashboard/delete/<str:kode_produk>/
+                // Mengirim permintaan POST untuk menghapus produk
                 fetch(`/dashboard/delete/${productId}/`, {
                     method: 'POST',
                     headers: {
@@ -128,15 +133,16 @@
                     }
                 }).then(response => {
                     if (response.ok) {
+                        // Jika berhasil, tampilkan konfirmasi dan muat ulang halaman
                         Swal.fire(
                             'Deleted!',
                             'Produk telah dihapus.',
                             'success'
                         ).then(() => {
-                            // Reload the page after success
                             window.location.reload();
                         });
                     } else {
+                        // Menampilkan pesan kesalahan jika gagal
                         Swal.fire(
                             'Error!',
                             'Ada masalah aat menghapus produk.',
@@ -148,5 +154,12 @@
         });
     }
 </script>
+
+<!-- d-flex: Digunakan untuk membuat container fleksibel yang memungkinkan elemen di dalamnya disusun secara fleksibel.
+justify-content-between: Mengatur elemen di dalam container fleksibel agar memiliki ruang di antara mereka.
+form-control: Kelas untuk input form agar terlihat konsisten dan responsif.
+btn, btn-outline-secondary, btn-primary, btn-warning, btn-danger: Kelas untuk memberikan gaya pada tombol-tombol, masing-masing dengan jenis dan warna berbeda.
+table, table-bordered, table-striped: Kelas untuk membuat tabel dengan batas dan strip bergantian.
+thead-dark: Memberikan latar belakang gelap pada bagian kepala tabel. -->
 
 {% endblock content %}

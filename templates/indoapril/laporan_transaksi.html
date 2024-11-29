@@ -1,20 +1,21 @@
 {% extends 'base.html' %}
 
+{% load custom_filters %}  <!-- Memuat filter kustom yang mungkin diperlukan untuk format data -->
 
-{% load custom_filters %}
 {% block title %}Laporan Transaksi{% endblock title %}
 
 {% block content %}
 <div class="container mt-5">
     <h2 class="text-center mb-4">Laporan Transaksi</h2>
 
-    <!-- Ringkasan -->
+    <!-- Ringkasan Transaksi -->
+    <!-- Bagian ini menampilkan ringkasan informasi transaksi seperti total transaksi, total pendapatan, dan jumlah produk terjual. -->
     <div class="row mb-4">
         <div class="col-md-4">
             <div class="card text-center">
                 <div class="card-body">
                     <h5>Total Transaksi</h5>
-                    <h3>{{ total_transaksi }}</h3>
+                    <h3>{{ total_transaksi }}</h3>  <!-- Menampilkan jumlah total transaksi -->
                 </div>
             </div>
         </div>
@@ -22,7 +23,7 @@
             <div class="card text-center">
                 <div class="card-body">
                     <h5>Total Pendapatan</h5>
-                    <h3>Rp. {{ total_pendapatan|dot_separator }}</h3>
+                    <h3>Rp. {{ total_pendapatan|dot_separator }}</h3>  <!-- Menampilkan total pendapatan dengan format pemisah ribuan -->
                 </div>
             </div>
         </div>
@@ -30,38 +31,52 @@
             <div class="card text-center">
                 <div class="card-body">
                     <h5>Produk Terjual</h5>
-                    <h3>{{ total_produk_terjual }}</h3>
+                    <h3>{{ total_produk_terjual }}</h3>  <!-- Menampilkan jumlah total produk terjual -->
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Filter Bulan --><form method="get" class="mb-4">
-    <div class="row">
-        <div class="col-md-4">
-            <label for="bulan">Bulan:</label>
-            <select name="bulan" id="bulan" class="form-control">
-                {% for i in daftar_bulan %}
-                <option value="{{ i }}" {% if i == bulan %}selected{% endif %}>{{ i }}</option>
-                {% endfor %}
-            </select>
+    <!-- Filter Bulan -->
+    <!-- Form ini memungkinkan pengguna untuk memilih bulan dan tahun yang ingin ditampilkan pada laporan transaksi. -->
+    <form method="get" class="mb-4">
+        <!-- Baris pertama untuk form filter -->
+        <div class="row">
+            <!-- Kolom pertama: Pilihan Bulan -->
+            <div class="col-md-4">
+                <label for="bulan">Bulan:</label>  <!-- Label untuk dropdown bulan -->
+                <select name="bulan" id="bulan" class="form-control">
+                    {% for i in daftar_bulan %}
+                        <!-- Opsi bulan diambil dari daftar_bulan -->
+                        <!-- Opsi akan terpilih (selected) jika bulan saat ini sama dengan i -->
+                        <option value="{{ i }}" {% if i == bulan %}selected{% endif %}>{{ i }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+    
+            <!-- Kolom kedua: Pilihan Tahun -->
+            <div class="col-md-4">
+                <label for="tahun">Tahun:</label>  <!-- Label untuk dropdown tahun -->
+                <select name="tahun" id="tahun" class="form-control">
+                    {% for i in daftar_tahun %}
+                        <!-- Opsi tahun diambil dari daftar_tahun -->
+                        <!-- Opsi akan terpilih (selected) jika tahun saat ini sama dengan i -->
+                        <option value="{{ i }}" {% if i == tahun %}selected{% endif %}>{{ i }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+    
+            <!-- Kolom ketiga: Tombol Filter -->
+            <div class="col-md-4 d-flex align-items-end">
+                <!-- Tombol submit untuk mengirimkan formulir filter -->
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </div>
         </div>
-        <div class="col-md-4">
-            <label for="tahun">Tahun:</label>
-            <select name="tahun" id="tahun" class="form-control">
-                {% for i in daftar_tahun %}
-                <option value="{{ i }}" {% if i == tahun %}selected{% endif %}>{{ i }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="col-md-4 d-flex align-items-end">
-            <button type="submit" class="btn btn-primary">Filter</button>
-        </div>
-    </div>
-</form>
-
+    </form>
+    
 
     <!-- Tabel Laporan -->
+    <!-- Tabel ini menampilkan daftar transaksi berdasarkan filter bulan dan tahun yang dipilih. -->
     <table class="table table-bordered table-striped">
         <thead>
             <tr>
@@ -77,48 +92,50 @@
         <tbody>
             {% for transaksi in page_obj %}
             <tr>
-                <td>{{ forloop.counter }}</td>
-                <td>{{ transaksi.id }}</td>
-                <td>{{ transaksi.tanggal|date:"d/m/Y, H:i:s" }}</td>
-                <td>Rp. {{ transaksi.pembayaran|dot_separator }}</td>
-                <td>Rp. {{ transaksi.kembalian|dot_separator }}</td>
-                <td>Rp. {{ transaksi.total_harga|dot_separator }}</td>
+                <td>{{ forloop.counter }}</td>  <!-- Menampilkan nomor urut transaksi -->
+                <td>{{ transaksi.id }}</td>  <!-- Menampilkan ID transaksi -->
+                <td>{{ transaksi.tanggal|date:"d/m/Y, H:i:s" }}</td>  <!-- Format tanggal transaksi -->
+                <td>Rp. {{ transaksi.pembayaran|dot_separator }}</td>  <!-- Menampilkan jumlah pembayaran dengan format pemisah ribuan -->
+                <td>Rp. {{ transaksi.kembalian|dot_separator }}</td>  <!-- Menampilkan jumlah kembalian dengan format pemisah ribuan -->
+                <td>Rp. {{ transaksi.total_harga|dot_separator }}</td>  <!-- Menampilkan total harga transaksi dengan format pemisah ribuan -->
                 <td>
-                    <a href="{% url 'riwayat_detail' transaksi.id %}" class="btn btn-sm btn-primary">Detail</a>
+                    <a href="{% url 'riwayat_detail' transaksi.id %}" class="btn btn-sm btn-primary">Detail</a>  <!-- Tombol untuk melihat detail transaksi -->
                 </td>
             </tr>
             {% empty %}
+            <!-- Jika tidak ada transaksi, tampilkan pesan ini -->
             <tr>
-                <td colspan="5" class="text-center">Tidak ada transaksi untuk bulan ini</td>
+                <td colspan="7" class="text-center">Tidak ada transaksi untuk bulan ini</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 
     <!-- Pagination -->
+    <!-- Bagian ini menampilkan navigasi untuk berpindah antar halaman laporan transaksi -->
     <div class="d-flex justify-content-between">
         <p>Menampilkan {{ page_obj.start_index }} - {{ page_obj.end_index }} dari {{ page_obj.paginator.count }} transaksi</p>
         <nav>
             <ul class="pagination">
                 {% if page_obj.has_previous %}
                 <li class="page-item">
-                    <a class="page-link" href="?page=1&bulan={{ bulan }}&tahun={{ tahun }}">«</a>
+                    <a class="page-link" href="?page=1&bulan={{ bulan }}&tahun={{ tahun }}">«</a>  <!-- Tombol untuk pergi ke halaman pertama -->
                 </li>
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}&bulan={{ bulan }}&tahun={{ tahun }}">‹</a>
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}&bulan={{ bulan }}&tahun={{ tahun }}">‹</a>  <!-- Tombol untuk pergi ke halaman sebelumnya -->
                 </li>
                 {% endif %}
                 {% for num in page_obj.paginator.page_range %}
                 <li class="page-item {% if num == page_obj.number %}active{% endif %}">
-                    <a class="page-link" href="?page={{ num }}&bulan={{ bulan }}&tahun={{ tahun }}">{{ num }}</a>
+                    <a class="page-link" href="?page={{ num }}&bulan={{ bulan }}&tahun={{ tahun }}">{{ num }}</a>  <!-- Menampilkan nomor halaman dengan highlight untuk halaman aktif -->
                 </li>
                 {% endfor %}
                 {% if page_obj.has_next %}
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.next_page_number }}&bulan={{ bulan }}&tahun={{ tahun }}">›</a>
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}&bulan={{ bulan }}&tahun={{ tahun }}">›</a>  <!-- Tombol untuk pergi ke halaman berikutnya -->
                 </li>
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&bulan={{ bulan }}&tahun={{ tahun }}">»</a>
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&bulan={{ bulan }}&tahun={{ tahun }}">»</a>  <!-- Tombol untuk pergi ke halaman terakhir -->
                 </li>
                 {% endif %}
             </ul>
