@@ -76,24 +76,34 @@ Proyek ini dikembangkan oleh:
 
 
 # Login
+Page untuk melakukan login
 ![Login](screenshot/Login.png)
 # Dashboard (Manajer)
+Page kelola produk
 ![Dashboard](screenshot/Dashboard.png)
 # Search (Manajer)
+Untuk mencari produk di page Dashboard
 ![Search](screenshot/Search.png)
 # Form Create (Manajer)
+Form untuk menambahkan produk
 ![Form](screenshot/Form.png)
 # Form Edit (Manajer)
+Form untuk mengubah data produk
 ![Edit](screenshot/Edit.png)
 # Restok (Manajer)
+Riwayat Restok
 ![Restok](screenshot/Restok.png)
 # Form Restok (Manajer)
+Form untuk menambahkan stok produk
 ![FormRestok](screenshot/FormRestok.png)
 # Riwayat (Manajer)
+Riwayat Transaksi
 ![Riwayat](screenshot/Riwayat.png)
 # Detail (Manajer)
+Page Detail Transaksi
 ![Detail](screenshot/Detail.png)
 # Transaksi (Kasir)
+Page Kasir melakukan transaksi
 ![Transaksi](screenshot/Transaksi.png)
 
 
