@@ -14,12 +14,8 @@
                 <div class="card-header">
                     <span>ID Transaksi: {{ transaksi.id }}</span>
                     <span>Tanggal: {{ transaksi.tanggal|date:"d/m/Y, H:i:s" }}</span>
-             
                 </div>
                 <div class="card-body">
-                    <!-- tanggal transaksi -->
-                    <!-- <div>11/17/2024, 5:20:52 PM</div> -->
-                    <!-- Table Transaksi -->
                     <table class="table table-bordered mt-3" id="table-transaksi">
                         <thead>
                             <tr>
@@ -49,7 +45,7 @@
  -->
                         </tbody>
                     </table>
-                    <h4 class="text-end mt-4" id="total-harga">Total: Rp. {{ transaksi.total_harga|floatformat:0 }}</h4>
+                    <h4 class="text-end mt-4" id="total-harga">Total: Rp. {{ transaksi.total_harga|dot_separator }}</h4>
               
                     <!-- <h4 class="text-end" id="total-harga">Rp. 160000</h4> -->
                 </div>
@@ -62,11 +58,11 @@
                     <div class="row g-3">
                         <div class="col-md-4">
                             <label class="form-label">Jumlah Pembayaran:</label>
-                            <p class="form-control-static">Rp. {{ transaksi.pembayaran|floatformat:0 }}</p>
+                            <p class="form-control-static">Rp. {{ transaksi.pembayaran|dot_separator }}</p>
                         </div>
                         <div class="col-md-4">
                             <label class="form-label">Kembalian:</label>
-                            <p class="form-control-static">Rp. {{ transaksi.kembalian|floatformat:0 }}</p>
+                            <p class="form-control-static">Rp. {{ transaksi.kembalian|dot_separator }}</p>
                         </div>
                     </div>
                 </div>

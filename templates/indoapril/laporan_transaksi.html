@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+
+{% load custom_filters %}
+{% block title %}Laporan Transaksi{% endblock title %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Laporan Transaksi</h2>
+
+    <!-- Ringkasan -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5>Total Transaksi</h5>
+                    <h3>{{ total_transaksi }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5>Total Pendapatan</h5>
+                    <h3>Rp. {{ total_pendapatan|dot_separator }}</h3>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <h5>Produk Terjual</h5>
+                    <h3>{{ total_produk_terjual }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Bulan --><form method="get" class="mb-4">
+    <div class="row">
+        <div class="col-md-4">
+            <label for="bulan">Bulan:</label>
+            <select name="bulan" id="bulan" class="form-control">
+                {% for i in daftar_bulan %}
+                <option value="{{ i }}" {% if i == bulan %}selected{% endif %}>{{ i }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label for="tahun">Tahun:</label>
+            <select name="tahun" id="tahun" class="form-control">
+                {% for i in daftar_tahun %}
+                <option value="{{ i }}" {% if i == tahun %}selected{% endif %}>{{ i }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary">Filter</button>
+        </div>
+    </div>
+</form>
+
+
+    <!-- Tabel Laporan -->
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>No.</th>
+                <th>Nomor Invoice</th>
+                <th>Tanggal</th>
+                <th>Pembayaran</th>
+                <th>Kembalian</th>
+                <th>Total</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transaksi in page_obj %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ transaksi.id }}</td>
+                <td>{{ transaksi.tanggal|date:"d/m/Y, H:i:s" }}</td>
+                <td>Rp. {{ transaksi.pembayaran|dot_separator }}</td>
+                <td>Rp. {{ transaksi.kembalian|dot_separator }}</td>
+                <td>Rp. {{ transaksi.total_harga|dot_separator }}</td>
+                <td>
+                    <a href="{% url 'riwayat_detail' transaksi.id %}" class="btn btn-sm btn-primary">Detail</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center">Tidak ada transaksi untuk bulan ini</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <div class="d-flex justify-content-between">
+        <p>Menampilkan {{ page_obj.start_index }} - {{ page_obj.end_index }} dari {{ page_obj.paginator.count }} transaksi</p>
+        <nav>
+            <ul class="pagination">
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page=1&bulan={{ bulan }}&tahun={{ tahun }}">«</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}&bulan={{ bulan }}&tahun={{ tahun }}">‹</a>
+                </li>
+                {% endif %}
+                {% for num in page_obj.paginator.page_range %}
+                <li class="page-item {% if num == page_obj.number %}active{% endif %}">
+                    <a class="page-link" href="?page={{ num }}&bulan={{ bulan }}&tahun={{ tahun }}">{{ num }}</a>
+                </li>
+                {% endfor %}
+                {% if page_obj.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}&bulan={{ bulan }}&tahun={{ tahun }}">›</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&bulan={{ bulan }}&tahun={{ tahun }}">»</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+</div>
+{% endblock content %}

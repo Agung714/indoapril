@@ -22,7 +22,7 @@
                     <a class="nav-link" href="{% url 'transaksi' %}">Transaksi</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'riwayat' %}">Riwayat</a>
+                    <a class="nav-link" href="{% url 'riwayat' %}">Laporan</a>
                 </li>
                 {% elif request.user.user_role.role == "manajer" %}
                 <li class="nav-item">
@@ -32,7 +32,7 @@
                     <a class="nav-link" href="{% url 'restok' %}">Re-Stock</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{% url 'riwayat' %}">Riwayat</a>
+                    <a class="nav-link" href="{% url 'riwayat' %}">Laporan</a>
                 </li>
                 {% endif %}
                 <li class="nav-item">

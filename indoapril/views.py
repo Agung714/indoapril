@@ -12,6 +12,8 @@ from .serializers import ProdukSerializer, TransaksiSerializer, RestokSerializer
 import requests
 from django.core.paginator import Paginator
 from rest_framework.filters import SearchFilter
+from django.db.models import Sum, F
+from datetime import datetime
 
 # URL base API
 API_BASE_URL = "http://127.0.0.1:8000/api"
@@ -193,14 +195,59 @@ def restok_create(request):
 
 # ====================== Riwayat ====================== 
 @login_required
-def riwayat_view(request):
-    transaksi_list = Transaksi.objects.all().order_by('-tanggal')
-    paginator = Paginator(transaksi_list, 10)
+def laporan_transaksi(request):
+    # Ambil parameter bulan dan tahun dari query string
+    try:
+        bulan = int(request.GET.get('bulan', datetime.now().month))
+        tahun = int(request.GET.get('tahun', datetime.now().year))
+    except ValueError:
+        bulan = datetime.now().month
+        tahun = datetime.now().year
 
+    # Filter transaksi berdasarkan bulan dan tahun
+    transaksi_queryset = Transaksi.objects.filter(
+        tanggal__year=tahun,
+        tanggal__month=bulan
+    ).order_by('-tanggal')  # Urutkan berdasarkan tanggal terbaru
+
+    # Ringkasan data
+    total_transaksi = transaksi_queryset.count()
+    total_pendapatan = transaksi_queryset.aggregate(total=Sum('total_harga'))['total'] or 0
+    total_produk_terjual = ItemTransaksi.objects.filter(transaksi__in=transaksi_queryset).aggregate(
+        total=Sum('jumlah')
+    )['total'] or 0
+
+    # Pagination
+    paginator = Paginator(transaksi_queryset, 10)  # Tampilkan 10 transaksi per halaman
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    return render(request, 'indoapril/riwayat_transaksi.html', {'page_obj': page_obj})
+    # Daftar bulan dan tahun
+    daftar_bulan = list(range(1, 13))
+    daftar_tahun = list(range(2020, 2030))  # Atur rentang tahun sesuai kebutuhan
+
+    # Kirim data ke template
+    context = {
+        'total_transaksi': total_transaksi,
+        'total_pendapatan': total_pendapatan,
+        'total_produk_terjual': total_produk_terjual,
+        'page_obj': page_obj,
+        'bulan': bulan,
+        'tahun': tahun,
+        'daftar_bulan': daftar_bulan,
+        'daftar_tahun': daftar_tahun,
+    }
+    return render(request, 'indoapril/laporan_transaksi.html', context)
+
+
+# def riwayat_view(request):
+#     transaksi_list = Transaksi.objects.all().order_by('-tanggal')
+#     paginator = Paginator(transaksi_list, 10)
+
+#     page_number = request.GET.get('page')
+#     page_obj = paginator.get_page(page_number)
+
+#     return render(request, 'indoapril/riwayat_transaksi.html', {'page_obj': page_obj})
 
 # ====================== Riwayat Detail ====================== 
 @login_required
@@ -278,7 +325,6 @@ def produk_detail(request, kode_produk):
     except Produk.DoesNotExist:
         return JsonResponse({'error': 'Produk tidak ditemukan.'}, status=404)
     
-
 # class ProdukListViewSet(ModelViewSet):
 #     queryset = Produk.objects.all()
 #     serializer_class = ProdukSerializer
